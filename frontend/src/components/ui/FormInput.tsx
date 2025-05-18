@@ -1,29 +1,49 @@
-import React, { InputHTMLAttributes } from 'react';
+import React from 'react';
 
-interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface FormInputProps {
   label: string;
+  type?: string;
+  name?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  required?: boolean;
   error?: string;
-  id: string;
+  className?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
   label,
+  type = 'text',
+  name,
+  value,
+  onChange,
+  placeholder,
+  required = false,
   error,
-  id,
   className = '',
-  ...props
 }) => {
   return (
-    <div className="form-group">
-      <label htmlFor={id} className="form-label">
-        {label}
+    <div className={className}>
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
-        id={id}
-        className={`form-input ${error ? 'border-red-500 focus:ring-red-400 focus:border-red-400' : ''} ${className}`}
-        {...props}
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        required={required}
+        className={`w-full px-4 py-2 border ${
+          error 
+            ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+            : 'border-gray-300 focus:ring-primary-500 focus:border-primary-500'
+        } rounded-lg transition-colors`}
       />
-      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="mt-1 text-sm text-red-600">{error}</p>
+      )}
     </div>
   );
 };
