@@ -35,7 +35,7 @@ const Header: React.FC = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center" onClick={closeMenu}>
               <Heart className="h-8 w-8 text-blue-500" />
-              <span className="ml-2 text-xl font-bold text-gray-800">OrganChain</span>
+              <span className="ml-2 text-xl font-bold text-gray-800">Aarogyam</span>
             </Link>
           </div>
 
