@@ -9,12 +9,14 @@ const donorSchema = new mongoose.Schema(
 		},
 		gender: {
 			type: String,
-			enum: ["Male", "Female", "Other"],
-			required: true,
+			enum: ["Male", "Female", "Other"]
+		},
+		password: {
+			type: String,
+			required: true
 		},
 		age: {
 			type: Number,
-			required: true,
 		},
 		email: {
 			type: String,
@@ -25,22 +27,18 @@ const donorSchema = new mongoose.Schema(
 		},
 		phone: {
 			type: String,
-			required: true,
 			match: /^[0-9]{10,15}$/,
 		},
 		bloodType: {
 			type: String,
-			required: true,
 			enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
 		},
 		organType: {
 			type: String,
-			required: true,
 			enum: ["Kidney", "Liver", "Heart", "Lung", "Pancreas", "Intestine"],
 		},
 		organAvailabilityDate: {
 			type: Date,
-			required: true,
 		},
 		isLivingDonor: {
 			type: Boolean,
@@ -70,13 +68,12 @@ const donorSchema = new mongoose.Schema(
 			lng: { type: Number },
 		},
 		proof: {
-			type: String, // e.g., URL to identity proof file
-			required: true,
+			type: String,
 		},
 		status: {
 			type: String,
-			enum: ["Pending", "Approved", "Rejected", "Withdrawn", "Matched"],
-			default: "Pending",
+			enum: ["Pending", "Approved", "None", "Withdrawn", "Matched"],
+			default: "None",
 		},
 	},
 	{ timestamps: true }

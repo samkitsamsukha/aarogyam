@@ -10,11 +10,9 @@ const recipientSchema = new mongoose.Schema(
 		gender: {
 			type: String,
 			enum: ["Male", "Female", "Other"],
-			required: true,
 		},
 		age: {
 			type: Number,
-			required: true,
 		},
 		email: {
 			type: String,
@@ -23,19 +21,23 @@ const recipientSchema = new mongoose.Schema(
 			lowercase: true,
 			trim: true,
 		},
-		phone: {
+		password: {
 			type: String,
 			required: true,
+		},
+		phone: {
+			type: String,
+			
 			match: /^[0-9]{10,15}$/,
 		},
 		bloodType: {
 			type: String,
-			required: true,
+			
 			enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
 		},
 		requiredOrgan: {
 			type: String,
-			required: true,
+			
 			enum: ["Kidney", "Liver", "Heart", "Lung", "Pancreas", "Intestine"],
 		},
 		waitingSince: {
@@ -43,7 +45,7 @@ const recipientSchema = new mongoose.Schema(
 			default: Date.now,
 		},
 		medicalCondition: {
-			diagnosis: { type: String, required: true },
+			diagnosis: { type: String },
 			chronicDiseases: [{ type: String }],
 			infections: {
 				hiv: { type: Boolean, default: false },
@@ -61,13 +63,12 @@ const recipientSchema = new mongoose.Schema(
 			lng: { type: Number },
 		},
 		proof: {
-			type: String, // URL to identity/proof of diagnosis document
-			required: true,
+			type: String,
 		},
 		status: {
 			type: String,
-			enum: ["Waiting", "Matched", "Transplanted", "Rejected", "Withdrawn"],
-			default: "Waiting",
+			enum: ["Waiting", "Matched", "Transplanted", "None", "Withdrawn"],
+			default: "None",
 		},
 		matchedDonor: {
 			type: mongoose.Schema.Types.ObjectId,
@@ -78,4 +79,4 @@ const recipientSchema = new mongoose.Schema(
 	{ timestamps: true }
 );
 
-export default mongoose.model("Recipient", recipientSchema);
+export const Recipient =  mongoose.model("Recipient", recipientSchema);
