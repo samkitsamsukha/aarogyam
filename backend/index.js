@@ -1,7 +1,7 @@
 const express = require("express");
-const { Donor } = require("./models/donorModel");
 const { connectDB } = require("./db/db");
-const { Recipient } = require("./models/recipientModel");
+const Donor = require("./models/donorModel");
+const Recipient = require("./models/recipientModel");
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -74,6 +74,7 @@ app.post("/login", async (req, res) => {
         );
         res.json({ token });
     } catch (err) {
+        console.log(err)
         res.status(500).json({ error: "Server error." });
     }
 });
