@@ -122,7 +122,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            New to LifeLink?{' '}
+            New to Aarogyam?{' '}
             <button
               type="button"
               onClick={onRegisterClick}

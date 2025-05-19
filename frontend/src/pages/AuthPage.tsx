@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import LoginForm from '../components/auth/LoginForm';
 import RegisterForm from '../components/auth/RegisterForm';
 import AuthLayout from '../components/layouts/AuthLayout';
-import { Heart } from 'lucide-react';
+import { HeartPulse } from 'lucide-react';
 
 const AuthPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
@@ -20,7 +20,7 @@ const AuthPage: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="bg-gradient-to-br from-primary-500 to-secondary-400 p-3 rounded-full inline-flex"
             >
-              <Heart className="h-8 w-8 text-white" fill="white" />
+              <HeartPulse className="h-8 w-8 text-white" fill="white" />
             </motion.div>
           </div>
           <motion.h1 
@@ -109,7 +109,7 @@ const AuthPage: React.FC = () => {
             {/* <PulseIcon className="h-3 w-3 text-secondary-500 mr-1" /> */}
             <span>Serving lives since 2025</span>
           </div>
-          <p>© 2025 LifeLink. All rights reserved.</p>
+          <p>© 2025 Aarogyam. All rights reserved.</p>
         </motion.div>
       </div>
     </AuthLayout>

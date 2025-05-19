@@ -35,8 +35,8 @@ const faqs: FAQ[] = [
   },
   {
     id: 6,
-    question: 'How does LifeLink ensure safety and compliance?',
-    answer: 'LifeLink adheres to all national and international organ donation regulations. We work with licensed medical facilities, verify all medical information, and ensure ethical practices throughout the donation process.',
+    question: 'How does Aarogyam ensure safety and compliance?',
+    answer: 'Aarogyam adheres to all national and international organ donation regulations. We work with licensed medical facilities, verify all medical information, and ensure ethical practices throughout the donation process.',
     category: 'general'
   }
 ];

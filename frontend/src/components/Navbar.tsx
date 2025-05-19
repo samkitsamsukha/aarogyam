@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Heart } from 'lucide-react';
+import { Menu, X, HeartPulse } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,8 +29,8 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
-            <Heart className="h-8 w-8 text-primary-500 mr-2" />
-            <span className="text-xl font-bold text-primary-800">LifeLink</span>
+            <HeartPulse className="h-8 w-8 text-primary-500 mr-2" />
+            <span className="text-xl font-bold text-primary-800">Aarogyam</span>
           </div>
 
           {/* Desktop Navigation */}

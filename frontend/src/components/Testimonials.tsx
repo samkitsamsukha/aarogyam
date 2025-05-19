@@ -7,28 +7,28 @@ const testimonials: Testimonial[] = [
     id: 1,
     name: 'David Chen',
     role: 'donor',
-    quote: 'Donating my kidney was one of the most fulfilling experiences of my life. The LifeLink team guided me through every step with compassion and professionalism.',
+    quote: 'Donating my kidney was one of the most fulfilling experiences of my life. The Aarogyam team guided me through every step with compassion and professionalism.',
     image: 'https://images.pexels.com/photos/5490276/pexels-photo-5490276.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
   {
     id: 2,
     name: 'Emily Rodriguez',
     role: 'recipient',
-    quote: 'After three years on the waiting list, LifeLink found me a liver donor in just two months. I\'ve been given a second chance at life and I\'m making every day count.',
+    quote: 'After three years on the waiting list, Aarogyam found me a liver donor in just two months. I\'ve been given a second chance at life and I\'m making every day count.',
     image: 'https://images.pexels.com/photos/6234600/pexels-photo-6234600.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
   {
     id: 3,
     name: 'Marcus Johnson',
     role: 'donor',
-    quote: 'The thought that part of me is helping someone else live a fuller life is incredible. LifeLink made the process straightforward and meaningful.',
+    quote: 'The thought that part of me is helping someone else live a fuller life is incredible. Aarogyam made the process straightforward and meaningful.',
     image: 'https://images.pexels.com/photos/5093964/pexels-photo-5093964.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   },
   {
     id: 4,
     name: 'Sophia Williams',
     role: 'recipient',
-    quote: 'My new kidney has given me freedom from dialysis and the ability to travel and enjoy life again. I\'m forever grateful to my donor and the LifeLink platform.',
+    quote: 'My new kidney has given me freedom from dialysis and the ability to travel and enjoy life again. I\'m forever grateful to my donor and the Aarogyam platform.',
     image: 'https://images.pexels.com/photos/4004173/pexels-photo-4004173.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
   }
 ];
@@ -54,7 +54,7 @@ const Testimonials: React.FC = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Success Stories</h2>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
-            Hear from the donors and recipients whose lives have been changed through LifeLink
+            Hear from the donors and recipients whose lives have been changed through Aarogyam
           </p>
         </div>
         

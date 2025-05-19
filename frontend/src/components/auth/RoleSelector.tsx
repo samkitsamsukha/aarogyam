@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Heart, Users } from 'lucide-react';
+import { HeartPulse, Users } from 'lucide-react';
 
 interface RoleSelectorProps {
   value: string;
@@ -37,7 +37,7 @@ const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onChange }) => {
           <div className={`p-2 rounded-full mb-2 ${
             value === 'donor' ? 'bg-primary-100 text-primary-600' : 'bg-gray-100 text-gray-500'
           }`}>
-            <Heart className="h-6 w-6" />
+            <HeartPulse className="h-6 w-6" />
           </div>
           
           <span className={`text-sm font-medium ${

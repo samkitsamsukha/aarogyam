@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Search, Calendar, MessageSquare } from 'lucide-react';
+import { HeartPulse, Search, Calendar, MessageSquare } from 'lucide-react';
 
 const ForRecipients: React.FC = () => {
   return (
@@ -11,13 +11,13 @@ const ForRecipients: React.FC = () => {
               Find Your <span className="text-secondary-500">Donor</span>
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              LifeLink helps connect you with compatible donors, providing hope and a second chance at life through our advanced matching system.
+              Aarogyam helps connect you with compatible donors, providing hope and a second chance at life through our advanced matching system.
             </p>
             
             <div className="space-y-6">
               <div className="flex items-start">
                 <div className="bg-secondary-100 p-3 rounded-full mr-4">
-                  <Heart className="h-6 w-6 text-secondary-600" />
+                  <HeartPulse className="h-6 w-6 text-secondary-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800 mb-1">Personalized Matching</h3>
@@ -85,10 +85,10 @@ const ForRecipients: React.FC = () => {
                 
                 <div className="p-8">
                   <h3 className="text-2xl font-bold text-gray-800 mb-4">
-                    "I received a heart transplant through LifeLink. Now I'm living life to the fullest."
+                    "I received a heart transplant through Aarogyam. Now I'm living life to the fullest."
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    After years on a traditional waiting list, LifeLink connected me with a compatible donor in just three months. The transplant was successful, and I'm eternally grateful.
+                    After years on a traditional waiting list, Aarogyam connected me with a compatible donor in just three months. The transplant was successful, and I'm eternally grateful.
                   </p>
                   <div className="flex items-center">
                     <img 

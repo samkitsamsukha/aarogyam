@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
                 Sharing <span className="text-secondary-100">Hope</span>.
               </h1>
               <p className="text-lg md:text-xl text-white opacity-90 mb-8 max-w-2xl">
-                LifeLink bridges the gap between organ donors and recipients, providing a seamless platform to save lives through the gift of organ donation.
+                Aarogyam bridges the gap between organ donors and recipients, providing a seamless platform to save lives through the gift of organ donation.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4">

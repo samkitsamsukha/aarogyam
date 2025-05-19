@@ -88,7 +88,7 @@ const ForDonors: React.FC = () => {
                     "I donated a kidney to a stranger. It was the most meaningful decision of my life."
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    After learning about the desperate need for kidney donors, I decided to become an altruistic donor. The team at LifeLink made the process smooth and rewarding.
+                    After learning about the desperate need for kidney donors, I decided to become an altruistic donor. The team at Aarogyam made the process smooth and rewarding.
                   </p>
                   <div className="flex items-center">
                     <img 

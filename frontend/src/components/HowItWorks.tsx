@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileCheck, UserCheck, Search, Heart } from 'lucide-react';
+import { FileCheck, UserCheck, Search, HeartPulse } from 'lucide-react';
 
 const HowItWorks: React.FC = () => {
   const steps = [
@@ -28,7 +28,7 @@ const HowItWorks: React.FC = () => {
       id: 4,
       title: 'Connect',
       description: 'Connect with your match through our secure platform and proceed with the transplant process.',
-      icon: <Heart className="h-10 w-10 text-secondary-500" />,
+      icon: <HeartPulse className="h-10 w-10 text-secondary-500" />,
       color: 'bg-secondary-50'
     }
   ];
@@ -37,7 +37,7 @@ const HowItWorks: React.FC = () => {
     <section id="how-it-works" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4 md:px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How LifeLink Works</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">How Aarogyam Works</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Our platform simplifies the complex process of organ donation and transplantation
           </p>
@@ -64,7 +64,7 @@ const HowItWorks: React.FC = () => {
         
         <div className="mt-16 text-center">
           <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
-            LifeLink ensures a safe, secure, and transparent process from registration to successful transplantation.
+            Aarogyam ensures a safe, secure, and transparent process from registration to successful transplantation.
           </p>
           <button className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-full font-medium transition-colors">
             Learn More About Our Process
