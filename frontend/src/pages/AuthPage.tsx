@@ -20,7 +20,7 @@ const AuthPage: React.FC = () => {
               transition={{ duration: 0.5 }}
               className="bg-gradient-to-br from-primary-500 to-secondary-400 p-3 rounded-full inline-flex"
             >
-              <HeartPulse className="h-8 w-8 text-white" fill="white" />
+              <HeartPulse className="h-8 w-8 text-white" />
             </motion.div>
           </div>
           <motion.h1 
@@ -29,7 +29,7 @@ const AuthPage: React.FC = () => {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="text-3xl font-display font-bold text-gray-800 mb-1"
           >
-            Life<span className="text-primary-600">Link</span>
+            Aarogyam
           </motion.h1>
           <motion.p 
             initial={{ y: -10, opacity: 0 }}

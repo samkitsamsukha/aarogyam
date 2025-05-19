@@ -4,6 +4,7 @@ import { UserPlus, Eye, EyeOff } from 'lucide-react';
 import Button from '../ui/Button';
 import FormInput from '../ui/FormInput';
 import RoleSelector from './RoleSelector';
+import axios from 'axios'; // Import axios
 
 interface RegisterFormProps {
   onLoginClick: () => void;
@@ -39,18 +40,18 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
       setError('Please fill in all required fields');
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
-    
+
     if (!agreeToTerms) {
       setError('You must agree to the Terms of Service and Privacy Policy');
       return;
@@ -58,16 +59,29 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
 
     setError('');
     setIsLoading(true);
-    
-    // Simulating API call
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      // Registration logic would go here
-      console.log('Registration attempt with:', formData);
+      const response = await axios.post('http://localhost:3000/register', {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      });
+
       setIsLoading(false);
-    } catch (err) {
-      setError('Registration failed. Please try again.');
+      // Registration successful, show success message and redirect to login
+      console.log('Registration successful:', response.data.message);
+      // You might want to set a success message in the state and display it
+      // before redirecting. For now, let's just redirect after a short delay.
+      setTimeout(onLoginClick, 2000);
+    } catch (error: any) {
       setIsLoading(false);
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+      console.error('Registration error:', error);
     }
   };
 
@@ -82,10 +96,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
           {error}
         </motion.div>
       )}
-      
+
       <div className="space-y-4">
         <RoleSelector value={formData.role} onChange={handleRoleChange} />
-        
+
         <div className="grid grid-cols-2 gap-4">
           <FormInput
             label="First Name"
@@ -95,7 +109,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             placeholder="John"
             required
           />
-          
+
           <FormInput
             label="Last Name"
             name="lastName"
@@ -105,7 +119,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             required
           />
         </div>
-        
+
         <FormInput
           label="Email Address"
           type="email"
@@ -115,7 +129,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
           placeholder="john.doe@example.com"
           required
         />
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Password
@@ -135,18 +149,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700"
             >
-              {showPassword ? (
-                <EyeOff size={18} />
-              ) : (
-                <Eye size={18} />
-              )}
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
           <p className="mt-1 text-xs text-gray-500">
             Must be at least 8 characters with letters and numbers
           </p>
         </div>
-        
+
         <FormInput
           label="Confirm Password"
           type={showPassword ? 'text' : 'password'}
@@ -156,7 +166,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
           placeholder="Confirm your password"
           required
         />
-        
+
         <div className="flex items-start mt-4">
           <input
             id="terms"
@@ -176,16 +186,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             </a>
           </label>
         </div>
-        
-        <Button 
-          type="submit" 
-          fullWidth 
+
+        <Button
+          type="submit"
+          fullWidth
           isLoading={isLoading}
           icon={<UserPlus size={18} />}
         >
           Create Account
         </Button>
-        
+
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             Already have an account?{' '}
