@@ -6,6 +6,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0"
   },
+  "type": "commonjs",
   "name": "backend",
   "version": "1.0.0",
   "main": "index.js",
