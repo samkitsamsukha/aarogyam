@@ -67,7 +67,7 @@ const recipientSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ["Waiting", "Matched", "Transplanted", "None", "Withdrawn"],
+			enum: ["Pending", "Matched", "None", "Transplanted"],
 			default: "None",
 		},
 		matchedDonor: {

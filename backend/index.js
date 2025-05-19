@@ -14,6 +14,8 @@ app.get("/", (req, res) => {
   res.send("Hello, Express!");
 });
 
+
+
 app.post("/register", async (req, res) => {
   await connectDB();
   const { name, email, password, role } = req.body;
@@ -39,13 +41,11 @@ app.post("/register", async (req, res) => {
     }
     const user = new UserModel({ name, email, password });
     await user.save();
-    res
-      .status(201)
-      .json({
-        message: `${
-          role.charAt(0).toUpperCase() + role.slice(1)
-        } registered successfully.`,
-      });
+    res.status(201).json({
+      message: `${
+        role.charAt(0).toUpperCase() + role.slice(1)
+      } registered successfully.`,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Server error." });
@@ -127,7 +127,7 @@ app.post("/onboard-donor", async (req, res) => {
     donor.medicalHistory = medicalHistory ?? donor.medicalHistory;
     donor.geoLocation = geoLocation ?? donor.geoLocation;
     donor.proof = proof ?? donor.proof;
-    donor.status = status ?? donor.status;
+    donor.status = "Pending";
 
     await donor.save();
     res.json({ message: "Donor onboarded successfully.", donor });
@@ -148,7 +148,6 @@ app.post("/onboard-recipient", async (req, res) => {
     medicalCondition,
     geoLocation,
     proof,
-    status,
   } = req.body;
 
   if (!email) {
@@ -172,7 +171,7 @@ app.post("/onboard-recipient", async (req, res) => {
     recipient.medicalCondition = medicalCondition ?? recipient.medicalCondition;
     recipient.geoLocation = geoLocation ?? recipient.geoLocation;
     recipient.proof = proof ?? recipient.proof;
-    recipient.status = status ?? recipient.status;
+    recipient.status = "Pending";
 
     await recipient.save();
     res.json({ message: "Recipient onboarded successfully.", recipient });
