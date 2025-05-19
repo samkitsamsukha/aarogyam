@@ -2,8 +2,11 @@ const { connectDB } = require("./db/db");
 const Donor = require("./models/donorModel");
 const Recipient = require("./models/recipientModel");
 
+require("dotenv").config();
+
 class DonorNode {
-  constructor(bloodGroup, city, age, organType) {
+  constructor(id, bloodGroup, city, age, organType) {
+    this.id = id;
     this.bloodGroup = bloodGroup;
     this.city = city;
     this.age = age;
@@ -12,7 +15,8 @@ class DonorNode {
 }
 
 class RecipientNode {
-  constructor(bloodGroup, city, age, urgency, organType) {
+  constructor(id, bloodGroup, city, age, urgency, organType) {
+    this.id = id;
     this.bloodGroup = bloodGroup;
     this.city = city;
     this.age = age;
@@ -122,12 +126,14 @@ async function checkIfMatchFound() {
   const m = sortedRecipients.length;
 
   const donors = donorsDB.map(
-    (d) => new DonorNode(d.bloodType, "delhi", d.age, d.organType)
+    (d) =>
+      new DonorNode(d._id.toString(), d.bloodType, "delhi", d.age, d.organType)
   );
 
   const recipients = sortedRecipients.map((r, index) => {
     const urgency = Math.round(5 * (1 - index / (m - 1 || 1)));
     return new RecipientNode(
+      r._id.toString(),
       r.bloodType,
       "delhi",
       r.age,
@@ -150,4 +156,34 @@ async function checkIfMatchFound() {
   const costMatrix = scoreMatrix.map((row) => row.map((val) => maxVal - val));
 
   const { matches, totalScore } = hungarian(costMatrix);
+
+  const filteredMatches = matches.filter(([di, ri]) => {
+    const score = scoreMatrix[di][ri];
+
+    return score != 0;
+  });
+
+  // console.log("🧾 Compatibility Matrix:");
+  // console.table(scoreMatrix);
+  // console.log("\n✅ Optimal Matching:");
+
+  // filteredMatches.forEach(([di, ri]) => {
+  //   const donor = donors[di];
+  //   const recipient = recipients[ri];
+  //   const score = scoreMatrix[di][ri];
+  //   console.log(
+  //     `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
+  //       `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
+  //       `| Score: ${score}`
+  //   );
+  // });
+
+  // console.log(`\n💯 Maximum Total Matching Score: ${totalScore}`);
+
+
+  // now send the mail to matched parties
 }
+
+module.exports = {
+  checkIfMatchFound,
+};

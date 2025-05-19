@@ -3,6 +3,7 @@ const { connectDB } = require("./db/db");
 const Donor = require("./models/donorModel");
 const Recipient = require("./models/recipientModel");
 const jwt = require("jsonwebtoken");
+const { checkIfMatchFound } = require("./algo");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -100,8 +101,7 @@ app.post("/onboard-donor", async (req, res) => {
     isLivingDonor,
     medicalHistory,
     geoLocation,
-    proof,
-    status,
+    proof
   } = req.body;
 
   if (!email) {
@@ -132,6 +132,7 @@ app.post("/onboard-donor", async (req, res) => {
     await donor.save();
     res.json({ message: "Donor onboarded successfully.", donor });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: "Server error." });
   }
 });
@@ -176,9 +177,18 @@ app.post("/onboard-recipient", async (req, res) => {
     await recipient.save();
     res.json({ message: "Recipient onboarded successfully.", recipient });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: "Server error." });
   }
 });
+
+app.get('/match', async (req,res)=>{
+    await checkIfMatchFound();
+
+    return res.json({
+        msg: "Worked !!"
+    })
+})
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
