@@ -72,7 +72,7 @@ const donorSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			enum: ["Pending", "Approved", "None", "Withdrawn", "Matched"],
+			enum: ["Pending", "Matched", "None", "Transplanted"],
 			default: "None",
 		},
 	},
