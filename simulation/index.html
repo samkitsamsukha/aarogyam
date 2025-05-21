@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Organ Matching Simulation</title>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script src="https://d3js.org/d3.v7.min.js"></script>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			/* Apply Inter font and basic background/text colors */
+			body {
+				font-family: "Inter", sans-serif;
+				background-color: #f3f4f6; /* Light gray background */
+				color: #333; /* Dark gray text */
+			}
+			/* Container for overall page layout */
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 2rem;
+			}
+			/* Styling for tables displaying matrices */
+			table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 1rem;
+			}
+			th,
+			td {
+				border: 1px solid #e5e7eb; /* Light gray border */
+				padding: 0.75rem;
+				text-align: left;
+			}
+			th {
+				background-color: #e0e7ff; /* Light indigo background for headers */
+				font-weight: 600;
+			}
+			/* Center text in score/cost matrix cells */
+			.score-matrix-table td {
+				text-align: center;
+			}
+			/* Highlight matched cells in matrices */
+			.match-highlight {
+				background-color: #d1fae5; /* Light green for matches */
+				font-weight: bold;
+			}
+			/* Styling for the SVG graph container */
+			.svg-container {
+				width: 100%;
+				height: 600px; /* Fixed height for SVG */
+				border: 1px solid #e5e7eb;
+				background-color: #ffffff;
+				border-radius: 0.5rem;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+				margin-top: 2rem;
+			}
+			/* D3.js specific styles for graph nodes */
+			.node circle {
+				stroke: #fff; /* White stroke for circles */
+				stroke-width: 1.5px;
+			}
+			.node text {
+				font-size: 10px;
+				text-anchor: middle;
+				fill: #333;
+			}
+			/* D3.js specific styles for graph links (edges) */
+			.link {
+				stroke: #999; /* Gray stroke for links */
+				stroke-opacity: 0.6;
+			}
+			/* Highlight matched links in the graph */
+			.link.matched {
+				stroke: #10b981; /* Tailwind green-500 */
+				stroke-width: 3px;
+				opacity: 1;
+			}
+			/* D3.js specific styles for link labels (scores) */
+			.link-label {
+				font-size: 8px;
+				fill: #666;
+				text-anchor: middle;
+			}
+		</style>
+	</head>
+	<body class="bg-gray-100 text-gray-800">
+		<div class="container">
+			<h1 class="text-4xl font-bold text-center text-indigo-700 mb-8">
+				Organ Matching Simulation
+			</h1>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+				<div class="bg-white p-6 rounded-lg shadow-md">
+					<h2 class="text-2xl font-semibold text-indigo-600 mb-4">Add Donor</h2>
+					<form id="donorForm" class="space-y-4">
+						<div>
+							<label
+								for="donorId"
+								class="block text-sm font-medium text-gray-700"
+								>ID (e.g., D001)</label
+							>
+							<input
+								type="text"
+								id="donorId"
+								name="id"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="donorBloodGroup"
+								class="block text-sm font-medium text-gray-700"
+								>Blood Group</label
+							>
+							<select
+								id="donorBloodGroup"
+								name="bloodGroup"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							>
+								<option value="">Select</option>
+								<option value="O-">O-</option>
+								<option value="O+">O+</option>
+								<option value="A-">A-</option>
+								<option value="A+">A+</option>
+								<option value="B-">B-</option>
+								<option value="B+">B+</option>
+								<option value="AB-">AB-</option>
+								<option value="AB+">AB+</option>
+							</select>
+						</div>
+						<div>
+							<label
+								for="donorCity"
+								class="block text-sm font-medium text-gray-700"
+								>City</label
+							>
+							<input
+								type="text"
+								id="donorCity"
+								name="city"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="donorAge"
+								class="block text-sm font-medium text-gray-700"
+								>Age</label
+							>
+							<input
+								type="number"
+								id="donorAge"
+								name="age"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								min="18"
+								max="100"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="donorOrganType"
+								class="block text-sm font-medium text-gray-700"
+								>Organ Type</label
+							>
+							<input
+								type="text"
+								id="donorOrganType"
+								name="organType"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<button
+							type="submit"
+							class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+						>
+							Add Donor
+						</button>
+					</form>
+				</div>
+
+				<div class="bg-white p-6 rounded-lg shadow-md">
+					<h2 class="text-2xl font-semibold text-indigo-600 mb-4">
+						Add Recipient
+					</h2>
+					<form id="recipientForm" class="space-y-4">
+						<div>
+							<label
+								for="recipientId"
+								class="block text-sm font-medium text-gray-700"
+								>ID (e.g., R001)</label
+							>
+							<input
+								type="text"
+								id="recipientId"
+								name="id"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="recipientBloodGroup"
+								class="block text-sm font-medium text-gray-700"
+								>Blood Group</label
+							>
+							<select
+								id="recipientBloodGroup"
+								name="bloodGroup"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							>
+								<option value="">Select</option>
+								<option value="O-">O-</option>
+								<option value="O+">O+</option>
+								<option value="A-">A-</option>
+								<option value="A+">A+</option>
+								<option value="B-">B-</option>
+								<option value="B+">B+</option>
+								<option value="AB-">AB-</option>
+								<option value="AB+">AB+</option>
+							</select>
+						</div>
+						<div>
+							<label
+								for="recipientCity"
+								class="block text-sm font-medium text-gray-700"
+								>City</label
+							>
+							<input
+								type="text"
+								id="recipientCity"
+								name="city"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="recipientAge"
+								class="block text-sm font-medium text-gray-700"
+								>Age</label
+							>
+							<input
+								type="number"
+								id="recipientAge"
+								name="age"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								min="1"
+								max="100"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="recipientUrgency"
+								class="block text-sm font-medium text-gray-700"
+								>Urgency (1-5)</label
+							>
+							<input
+								type="number"
+								id="recipientUrgency"
+								name="urgency"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								min="1"
+								max="5"
+								required
+							/>
+						</div>
+						<div>
+							<label
+								for="recipientOrganType"
+								class="block text-sm font-medium text-gray-700"
+								>Required Organ Type</label
+							>
+							<input
+								type="text"
+								id="recipientOrganType"
+								name="organType"
+								class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500"
+								required
+							/>
+						</div>
+						<button
+							type="submit"
+							class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+						>
+							Add Recipient
+						</button>
+					</form>
+				</div>
+			</div>
+
+			<div class="bg-white p-6 rounded-lg shadow-md mb-8">
+				<h2 class="text-2xl font-semibold text-indigo-600 mb-4">
+					Current Data
+				</h2>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<h3 class="text-xl font-medium text-gray-700 mb-2">Donors</h3>
+						<div id="donorsList" class="space-y-2">
+							<p class="text-gray-500">No donors added yet.</p>
+						</div>
+					</div>
+					<div>
+						<h3 class="text-xl font-medium text-gray-700 mb-2">Recipients</h3>
+						<div id="recipientsList" class="space-y-2">
+							<p class="text-gray-500">No recipients added yet.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<button
+				id="runMatchingBtn"
+				class="w-full bg-green-600 text-white py-3 px-6 rounded-md text-lg font-semibold hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out mb-8"
+			>
+				Run Organ Matching Algorithm
+			</button>
+
+			<div
+				id="resultsSection"
+				class="hidden bg-white p-6 rounded-lg shadow-md mb-8"
+			>
+				<h2 class="text-2xl font-semibold text-indigo-600 mb-4">
+					Matching Results
+				</h2>
+
+				<div class="mb-6">
+					<h3 class="text-xl font-medium text-gray-700 mb-2">
+						Compatibility Score Matrix
+					</h3>
+					<div id="scoreMatrixDisplay" class="overflow-x-auto">
+						<p class="text-gray-500">Run matching to see the matrix.</p>
+					</div>
+				</div>
+
+				<div class="mb-6">
+					<h3 class="text-xl font-medium text-gray-700 mb-2">
+						Cost Matrix (for Hungarian Algorithm)
+					</h3>
+					<div id="costMatrixDisplay" class="overflow-x-auto">
+						<p class="text-gray-500">Run matching to see the matrix.</p>
+					</div>
+				</div>
+
+				<div class="mb-6">
+					<h3 class="text-xl font-medium text-gray-700 mb-2">
+						Optimal Matches
+					</h3>
+					<div id="optimalMatchesDisplay">
+						<p class="text-gray-500">Run matching to see the optimal pairs.</p>
+					</div>
+				</div>
+
+				<div>
+					<h3 class="text-xl font-medium text-gray-700 mb-2">
+						Weighted Bipartite Graph Visualization
+					</h3>
+					<div class="svg-container" id="graphContainer"></div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			// In-memory storage for donors and recipients data
+			let donors = [];
+			let recipients = [];
+
+			// --- Core Logic from provided code (adapted for client-side) ---
+
+			/**
+			 * Represents a Donor node with relevant attributes.
+			 */
+			class DonorNode {
+				constructor(id, bloodGroup, city, age, organType) {
+					this.id = id;
+					this.bloodGroup = bloodGroup;
+					this.city = city;
+					this.age = age;
+					this.organType = organType;
+				}
+			}
+
+			/**
+			 * Represents a Recipient node with relevant attributes.
+			 */
+			class RecipientNode {
+				constructor(id, bloodGroup, city, age, urgency, organType) {
+					this.id = id;
+					this.bloodGroup = bloodGroup;
+					this.city = city;
+					this.age = age;
+					this.urgency = urgency; // Urgency level (e.g., 1-5)
+					this.organType = organType;
+				}
+			}
+
+			/**
+			 * Defines blood group compatibility rules, including Rh factor.
+			 * Keys are donor blood groups, values are arrays of compatible recipient blood groups.
+			 */
+			const bloodCompatibilityWithRh = {
+				"O-": ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"], // Universal donor
+				"O+": ["O+", "A+", "B+", "AB+"],
+				"A-": ["A-", "A+", "AB-", "AB+"],
+				"A+": ["A+", "AB+"],
+				"B-": ["B-", "B+", "AB-", "AB+"],
+				"B+": ["B+", "AB+"],
+				"AB-": ["AB-", "AB+"],
+				"AB+": ["AB+"], // Universal recipient
+			};
+
+			/**
+			 * Checks if a donor's blood group is compatible with a recipient's blood group.
+			 * @param {string} donorBG - The blood group of the donor.
+			 * @param {string} recipientBG - The blood group of the recipient.
+			 * @returns {boolean} True if compatible, false otherwise.
+			 */
+			function isCompatible(donorBG, recipientBG) {
+				return bloodCompatibilityWithRh[donorBG]?.includes(recipientBG);
+			}
+
+			/**
+			 * Calculates a compatibility score between a donor and a recipient based on several criteria.
+			 * A higher score indicates a better match.
+			 * @param {DonorNode} d - The donor object.
+			 * @param {RecipientNode} r - The recipient object.
+			 * @returns {number} The compatibility score. Returns 0 if not compatible on fundamental criteria.
+			 */
+			function getCompatibilityScore(d, r) {
+				// Check for fundamental incompatibilities first
+				if (!isCompatible(d.bloodGroup, r.bloodGroup)) return 0;
+				// Organ type must match (case-insensitive)
+				if (d.organType.toLowerCase() !== r.organType.toLowerCase()) return 0;
+
+				let score = 0;
+				score += 50; // Base score for blood and organ match (significant factor)
+
+				// Add score for city proximity (local matches are often preferred)
+				if (d.city.toLowerCase() === r.city.toLowerCase()) score += 20;
+
+				// Add score based on recipient's urgency (higher urgency = higher score contribution)
+				// Urgency is 1-5, so score contribution ranges from 10 to 50.
+				score += r.urgency * 10;
+
+				// Add score based on age difference (closer ages get higher scores)
+				// Max 20 points for same age, decreases as age difference increases.
+				// For example, 0 difference = 20 pts, 10 difference = 10 pts, 20+ difference = 0 pts.
+				score += Math.max(0, 20 - Math.abs(d.age - r.age));
+
+				return score;
+			}
+
+			/**
+			 * Implements the Hungarian algorithm to find the minimum cost perfect matching
+			 * in a bipartite graph. This function is adapted to work with a cost matrix.
+			 *
+			 * The algorithm finds an assignment of donors to recipients such that the sum of
+			 * costs (or inverted scores) is minimized.
+			 *
+			 * @param {number[][]} costMatrix - A 2D array representing the cost matrix.
+			 * costMatrix[i][j] is the cost of matching donor i to recipient j.
+			 * Lower costs are better.
+			 * @returns {{matches: number[][], totalScore: number}} An object containing:
+			 * - `matches`: An array of [donor index, recipient index] pairs for the optimal assignment.
+			 * - `totalScore`: The sum of the *original compatibility scores* for the matched pairs.
+			 */
+			function hungarian(costMatrix) {
+				const n = costMatrix.length; // Number of rows (donors)
+				const m = costMatrix[0] ? costMatrix[0].length : 0; // Number of columns (recipients)
+
+				// Handle empty matrices immediately
+				if (n === 0 || m === 0) {
+					return { matches: [], totalScore: 0 };
+				}
+
+				// Find the maximum value in the original (unpadded) cost matrix.
+				// This is used for padding and later to convert costs back to scores.
+				let originalMaxVal = 0;
+				for (let i = 0; i < n; i++) {
+					for (let j = 0; j < m; j++) {
+						originalMaxVal = Math.max(originalMaxVal, costMatrix[i][j]);
+					}
+				}
+
+				// Determine the size of the square matrix needed for the Hungarian algorithm.
+				const size = Math.max(n, m);
+				// Create a padded cost matrix. Dummy rows/columns are filled with a value
+				// that is higher than any real cost, ensuring they are chosen last.
+				const paddedCostMatrix = Array.from({ length: size }, () =>
+					Array(size).fill(originalMaxVal + 1)
+				);
+
+				// Copy original costs into the padded matrix
+				for (let i = 0; i < n; i++) {
+					for (let j = 0; j < m; j++) {
+						paddedCostMatrix[i][j] = costMatrix[i][j];
+					}
+				}
+
+				// Initialize potentials (u for rows, v for columns) and assignment arrays.
+				const u = Array(size + 1).fill(0); // Row potentials (1-indexed for algorithm)
+				const v = Array(size + 1).fill(0); // Column potentials (1-indexed for algorithm)
+				// p[j] stores the row index (1-indexed) assigned to column j.
+				// p[0] is used temporarily for the current row being processed.
+				const p = Array(size + 1).fill(0);
+				// way[j] stores the previous column in the augmenting path leading to column j.
+				const way = Array(size + 1).fill(0);
+
+				// Main loop: Iterate for each row (donor) to find an assignment.
+				for (let i = 1; i <= size; i++) {
+					p[0] = i; // Set the current row to be matched.
+					const minv = Array(size + 1).fill(Infinity); // Minimum reduced cost to reach each column.
+					const used = Array(size + 1).fill(false); // Tracks visited columns in the current augmenting path search.
+					let j0 = 0; // Current column in the path search.
+
+					// Augmenting path search (Dijkstra-like approach)
+					do {
+						used[j0] = true;
+						const i0 = p[j0]; // The row currently matched to j0 (or the current row if j0 is 0).
+						let delta = Infinity; // Minimum slack (minimum reduced cost to an unvisited column).
+						let j1 = 0; // The column that provides the minimum slack.
+
+						// Find the unvisited column with the minimum reduced cost.
+						for (let j = 1; j <= size; j++) {
+							if (!used[j]) {
+								// Calculate reduced cost: cost(i0, j) - u[i0] - v[j]
+								const cur = paddedCostMatrix[i0 - 1][j - 1] - u[i0] - v[j];
+								if (cur < minv[j]) {
+									minv[j] = cur;
+									way[j] = j0; // Store the path: j was reached from j0.
+								}
+								if (minv[j] < delta) {
+									delta = minv[j];
+									j1 = j;
+								}
+							}
+						}
+
+						// Update potentials (u and v) and minv values based on the found delta.
+						// This ensures that reduced costs remain non-negative.
+						for (let j = 0; j <= size; j++) {
+							if (used[j]) {
+								u[p[j]] += delta;
+								v[j] -= delta;
+							} else {
+								minv[j] -= delta;
+							}
+						}
+
+						j0 = j1; // Move to the next column in the path.
+					} while (p[j0] !== 0); // Continue until an unmatched column (p[j0] == 0) is found.
+
+					// Reconstruct the augmenting path and update the assignment (p array).
+					do {
+						const j1 = way[j0];
+						p[j0] = p[j1];
+						j0 = j1;
+					} while (j0 !== 0);
+				}
+
+				// Collect the optimal matches and calculate the total score based on original scores.
+				const result = [];
+				let totalScore = 0;
+
+				for (let j = 1; j <= size; j++) {
+					const donorIdx = p[j] - 1; // Convert 1-indexed row back to 0-indexed
+					const recipientIdx = j - 1; // Convert 1-indexed column back to 0-indexed
+
+					// Only include matches that refer to original (non-padded) donors/recipients
+					// and have a positive compatibility score (meaning they are truly compatible).
+					if (
+						donorIdx >= 0 &&
+						donorIdx < n &&
+						recipientIdx >= 0 &&
+						recipientIdx < m
+					) {
+						// Check if the original score for this match is greater than 0
+						const originalScoreForMatch =
+							originalMaxVal - paddedCostMatrix[donorIdx][recipientIdx];
+						if (originalScoreForMatch > 0) {
+							result.push([donorIdx, recipientIdx]);
+							totalScore += originalScoreForMatch;
+						}
+					}
+				}
+
+				return { matches: result, totalScore: totalScore };
+			}
+
+			// --- DOM Manipulation and Event Handlers ---
+
+			// Get references to relevant HTML elements
+			const donorForm = document.getElementById("donorForm");
+			const recipientForm = document.getElementById("recipientForm");
+			const donorsListDiv = document.getElementById("donorsList");
+			const recipientsListDiv = document.getElementById("recipientsList");
+			const runMatchingBtn = document.getElementById("runMatchingBtn");
+			const resultsSection = document.getElementById("resultsSection");
+			const scoreMatrixDisplay = document.getElementById("scoreMatrixDisplay");
+			const costMatrixDisplay = document.getElementById("costMatrixDisplay");
+			const optimalMatchesDisplay = document.getElementById(
+				"optimalMatchesDisplay"
+			);
+			const graphContainer = document.getElementById("graphContainer");
+
+			/**
+			 * Displays the current list of donors in the UI.
+			 */
+			function displayDonors() {
+				if (donors.length === 0) {
+					donorsListDiv.innerHTML =
+						'<p class="text-gray-500">No donors added yet.</p>';
+					return;
+				}
+				// Generate HTML for each donor and join them
+				donorsListDiv.innerHTML = donors
+					.map(
+						(d) => `
+                <div class="bg-gray-50 p-3 rounded-md border border-gray-200">
+                    <p><strong>ID:</strong> ${d.id}</p>
+                    <p><strong>Blood Group:</strong> ${d.bloodGroup}</p>
+                    <p><strong>City:</strong> ${d.city}</p>
+                    <p><strong>Age:</strong> ${d.age}</p>
+                    <p><strong>Organ:</strong> ${d.organType}</p>
+                </div>
+            `
+					)
+					.join("");
+			}
+
+			/**
+			 * Displays the current list of recipients in the UI.
+			 */
+			function displayRecipients() {
+				if (recipients.length === 0) {
+					recipientsListDiv.innerHTML =
+						'<p class="text-gray-500">No recipients added yet.</p>';
+					return;
+				}
+				// Generate HTML for each recipient and join them
+				recipientsListDiv.innerHTML = recipients
+					.map(
+						(r) => `
+                <div class="bg-gray-50 p-3 rounded-md border border-gray-200">
+                    <p><strong>ID:</strong> ${r.id}</p>
+                    <p><strong>Blood Group:</strong> ${r.bloodGroup}</p>
+                    <p><strong>City:</strong> ${r.city}</p>
+                    <p><strong>Age:</strong> ${r.age}</p>
+                    <p><strong>Urgency:</strong> ${r.urgency}</p>
+                    <p><strong>Organ:</strong> ${r.organType}</p>
+                </div>
+            `
+					)
+					.join("");
+			}
+
+			/**
+			 * Renders a matrix (score or cost) into an HTML table.
+			 * @param {number[][]} matrix - The 2D array to display.
+			 * @param {string[]} rowHeaders - Array of headers for rows (e.g., Donor IDs).
+			 * @param {string[]} colHeaders - Array of headers for columns (e.g., Recipient IDs).
+			 * @param {HTMLElement} displayElement - The DOM element to render the table into.
+			 * @param {number[][]} [highlightMatches=[]] - Optional array of [row, col] indices to highlight.
+			 */
+			function renderMatrix(
+				matrix,
+				rowHeaders,
+				colHeaders,
+				displayElement,
+				highlightMatches = []
+			) {
+				// Check if matrix is empty or invalid
+				if (
+					!matrix ||
+					matrix.length === 0 ||
+					(matrix.length > 0 && matrix[0].length === 0)
+				) {
+					displayElement.innerHTML =
+						'<p class="text-gray-500">Matrix is empty or invalid.</p>';
+					return;
+				}
+
+				let tableHTML =
+					'<table class="score-matrix-table min-w-full bg-white rounded-lg shadow-sm">';
+				tableHTML += "<thead><tr><th></th>"; // Empty corner for row headers
+				// Add column headers
+				colHeaders.forEach((header) => {
+					tableHTML += `<th class="px-4 py-2">${header}</th>`;
+				});
+				tableHTML += "</tr></thead><tbody>";
+
+				// Populate table rows and cells
+				matrix.forEach((row, rowIndex) => {
+					tableHTML += `<tr><th class="px-4 py-2">${rowHeaders[rowIndex]}</th>`;
+					row.forEach((cell, colIndex) => {
+						// Check if the current cell is part of an optimal match
+						const isMatched = highlightMatches.some(
+							([r, c]) => r === rowIndex && c === colIndex
+						);
+						const highlightClass = isMatched ? "match-highlight" : "";
+						tableHTML += `<td class="px-4 py-2 ${highlightClass}">${cell}</td>`;
+					});
+					tableHTML += "</tr>";
+				});
+				tableHTML += "</tbody></table>";
+				displayElement.innerHTML = tableHTML;
+			}
+
+			/**
+			 * Draws a weighted bipartite graph visualization using D3.js.
+			 * Donors are on the left, recipients on the right.
+			 * Edges represent compatibility scores, with optimal matches highlighted.
+			 * @param {DonorNode[]} donorsData - Array of donor objects.
+			 * @param {RecipientNode[]} recipientsData - Array of recipient objects.
+			 * @param {number[][]} matches - Array of [donor index, recipient index] for optimal matches.
+			 * @param {number[][]} scoreMatrix - The compatibility score matrix.
+			 */
+			function drawGraph(donorsData, recipientsData, matches, scoreMatrix) {
+				const svgContainer = d3.select("#graphContainer");
+				svgContainer.html(""); // Clear any previous SVG content
+
+				// Get the dimensions of the container
+				const width = svgContainer.node().getBoundingClientRect().width;
+				const height = svgContainer.node().getBoundingClientRect().height;
+
+				// Create the SVG element
+				const svg = svgContainer
+					.append("svg")
+					.attr("width", "100%")
+					.attr("height", "100%")
+					.attr("viewBox", `0 0 ${width} ${height}`) // Use viewBox for responsiveness
+					.attr("preserveAspectRatio", "xMidYMid meet");
+
+				// Prepare nodes for D3.js simulation
+				const nodes = [];
+				donorsData.forEach((d, i) =>
+					nodes.push({ id: d.id, type: "donor", index: i, original: d })
+				);
+				recipientsData.forEach((r, i) =>
+					nodes.push({ id: r.id, type: "recipient", index: i, original: r })
+				);
+
+				// Prepare links (edges) for D3.js simulation
+				const links = [];
+				for (let i = 0; i < donorsData.length; i++) {
+					for (let j = 0; j < recipientsData.length; j++) {
+						const score = scoreMatrix[i][j];
+						if (score > 0) {
+							// Only draw links for compatible pairs (score > 0)
+							links.push({
+								source: donorsData[i].id,
+								target: recipientsData[j].id,
+								score: score,
+								// Check if this link is part of the optimal matching
+								isMatched: matches.some(([di, ri]) => di === i && ri === j),
+							});
+						}
+					}
+				}
+
+				// Create a map for quick node lookup by ID (needed for forceLink)
+				const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+
+				// Replace source/target IDs with actual node objects for forceLink
+				links.forEach((link) => {
+					link.source = nodeMap.get(link.source);
+					link.target = nodeMap.get(link.target);
+				});
+
+				// Create a force simulation for graph layout
+				const simulation = d3
+					.forceSimulation(nodes)
+					// Force for links (edges) with a specified distance
+					.force(
+						"link",
+						d3
+							.forceLink(links)
+							.id((d) => d.id)
+							.distance(150)
+					)
+					// Force to prevent node overlap (charge)
+					.force("charge", d3.forceManyBody().strength(-300))
+					// Force to center the graph
+					.force("center", d3.forceCenter(width / 2, height / 2))
+					// X-axis force to separate donors (left) and recipients (right)
+					.force(
+						"x",
+						d3
+							.forceX((d) => (d.type === "donor" ? width / 4 : (3 * width) / 4))
+							.strength(0.8)
+					)
+					// Y-axis force to keep nodes relatively centered vertically
+					.force("y", d3.forceY(height / 2).strength(0.1));
+
+				// Add links (lines) to the SVG
+				const link = svg
+					.append("g")
+					.attr("class", "links")
+					.selectAll("line")
+					.data(links)
+					.enter()
+					.append("line")
+					.attr("class", (d) => `link ${d.isMatched ? "matched" : ""}`) // Apply 'matched' class if part of optimal solution
+					.attr("stroke-width", (d) => (d.isMatched ? 3 : 1)); // Thicker stroke for matched links
+
+				// Add link labels (score text) to the SVG
+				const linkLabel = svg
+					.append("g")
+					.attr("class", "link-labels")
+					.selectAll("text")
+					.data(links)
+					.enter()
+					.append("text")
+					.attr("class", "link-label")
+					.text((d) => d.score) // Display the score on the link
+					.attr("dy", -5); // Offset text slightly above the line
+
+				// Add nodes (circles and text) to the SVG
+				const node = svg
+					.append("g")
+					.attr("class", "nodes")
+					.selectAll("g")
+					.data(nodes)
+					.enter()
+					.append("g")
+					.attr("class", "node")
+					// Enable dragging for nodes
+					.call(
+						d3
+							.drag()
+							.on("start", dragstarted)
+							.on("drag", dragged)
+							.on("end", dragended)
+					);
+
+				// Append circles to nodes
+				node
+					.append("circle")
+					.attr("r", 15) // Radius of the node circles
+					.attr("fill", (d) => (d.type === "donor" ? "#6366f1" : "#ef4444")); // Indigo for donors, Red for recipients
+
+				// Append text (ID) to nodes
+				node
+					.append("text")
+					.attr("dy", 4) // Vertical offset for text
+					.text((d) => d.id);
+
+				// Update positions of links, link labels, and nodes on each simulation tick
+				simulation.on("tick", () => {
+					link
+						.attr("x1", (d) => d.source.x)
+						.attr("y1", (d) => d.source.y)
+						.attr("x2", (d) => d.target.x)
+						.attr("y2", (d) => d.target.y);
+
+					linkLabel
+						.attr("x", (d) => (d.source.x + d.target.x) / 2)
+						.attr("y", (d) => (d.source.y + d.target.y) / 2);
+
+					node.attr("transform", (d) => `translate(${d.x},${d.y})`);
+				});
+
+				// Drag event handlers for nodes
+				function dragstarted(event, d) {
+					if (!event.active) simulation.alphaTarget(0.3).restart();
+					d.fx = d.x;
+					d.fy = d.y;
+				}
+
+				function dragged(event, d) {
+					d.fx = event.x;
+					d.fy = event.y;
+				}
+
+				function dragended(event, d) {
+					if (!event.active) simulation.alphaTarget(0);
+					d.fx = null;
+					d.fy = null;
+				}
+			}
+
+			// --- Event Listeners for Forms and Button ---
+
+			// Event listener for Donor form submission
+			donorForm.addEventListener("submit", (e) => {
+				e.preventDefault(); // Prevent default form submission
+				const formData = new FormData(donorForm); // Get form data
+				const newDonor = new DonorNode(
+					formData.get("id"),
+					formData.get("bloodGroup"),
+					formData.get("city"),
+					parseInt(formData.get("age")),
+					formData.get("organType")
+				);
+
+				// Check for duplicate donor ID
+				if (donors.some((d) => d.id === newDonor.id)) {
+					customAlert(
+						"Donor with this ID already exists. Please use a unique ID."
+					);
+					return;
+				}
+
+				donors.push(newDonor); // Add new donor to array
+				displayDonors(); // Update donor list display
+				donorForm.reset(); // Clear form fields
+				resultsSection.classList.add("hidden"); // Hide results if data changes
+			});
+
+			// Event listener for Recipient form submission
+			recipientForm.addEventListener("submit", (e) => {
+				e.preventDefault(); // Prevent default form submission
+				const formData = new FormData(recipientForm); // Get form data
+				const newRecipient = new RecipientNode(
+					formData.get("id"),
+					formData.get("bloodGroup"),
+					formData.get("city"),
+					parseInt(formData.get("age")),
+					parseInt(formData.get("urgency")),
+					formData.get("organType")
+				);
+
+				// Check for duplicate recipient ID
+				if (recipients.some((r) => r.id === newRecipient.id)) {
+					customAlert(
+						"Recipient with this ID already exists. Please use a unique ID."
+					);
+					return;
+				}
+
+				recipients.push(newRecipient); // Add new recipient to array
+				displayRecipients(); // Update recipient list display
+				recipientForm.reset(); // Clear form fields
+				resultsSection.classList.add("hidden"); // Hide results if data changes
+			});
+
+			// Event listener for the "Run Organ Matching Algorithm" button
+			runMatchingBtn.addEventListener("click", () => {
+				// Check if there are enough donors and recipients for matching
+				if (donors.length === 0 || recipients.length === 0) {
+					customAlert(
+						"Please add at least one donor and one recipient to run the matching algorithm."
+					);
+					return;
+				}
+
+				// Create a copy of recipients and sort them by urgency (highest first)
+				// This simulates the 'waitingSince' urgency calculation from the original code.
+				const sortedRecipients = [...recipients].sort(
+					(a, b) => b.urgency - a.urgency
+				);
+
+				const n = donors.length; // Number of donors
+				const m = sortedRecipients.length; // Number of recipients
+
+				// Create the compatibility score matrix (donors x recipients)
+				const scoreMatrix = Array.from({ length: n }, () => Array(m).fill(0));
+				for (let i = 0; i < n; i++) {
+					for (let j = 0; j < m; j++) {
+						scoreMatrix[i][j] = getCompatibilityScore(
+							donors[i],
+							sortedRecipients[j]
+						);
+					}
+				}
+
+				// Find the maximum value in the score matrix.
+				// This is used to convert scores to costs (maxVal - score),
+				// where a higher score results in a lower cost.
+				let maxVal = 0;
+				if (n > 0 && m > 0) {
+					for (let row of scoreMatrix) {
+						for (let v of row) {
+							maxVal = Math.max(maxVal, v);
+						}
+					}
+				}
+
+				// Create the cost matrix by subtracting each score from maxVal.
+				// This transforms the problem from maximum weight matching to minimum cost matching.
+				const costMatrix = scoreMatrix.map((row) =>
+					row.map((val) => maxVal - val)
+				);
+
+				// Run the Hungarian algorithm to find the optimal assignment.
+				const { matches, totalScore } = hungarian(costMatrix);
+
+				// Filter out matches that resulted in a 0 compatibility score (incompatible pairs)
+				// or were part of the padding for the Hungarian algorithm.
+				const filteredMatches = matches.filter(([di, ri]) => {
+					return scoreMatrix[di][ri] > 0;
+				});
+
+				// Display results section
+				resultsSection.classList.remove("hidden");
+
+				// Prepare headers for matrix display
+				const donorIds = donors.map((d) => d.id);
+				const recipientIds = sortedRecipients.map((r) => r.id);
+
+				// Render and display the score and cost matrices
+				renderMatrix(
+					scoreMatrix,
+					donorIds,
+					recipientIds,
+					scoreMatrixDisplay,
+					filteredMatches
+				);
+				renderMatrix(
+					costMatrix,
+					donorIds,
+					recipientIds,
+					costMatrixDisplay,
+					filteredMatches
+				);
+
+				// Display optimal matches
+				if (filteredMatches.length === 0) {
+					optimalMatchesDisplay.innerHTML =
+						'<p class="text-gray-500">No optimal matches found based on compatibility criteria.</p>';
+				} else {
+					let matchesHTML = `<p class="mb-2"><strong>Total Optimal Matching Score:</strong> ${totalScore}</p>`;
+					matchesHTML += '<ul class="list-disc list-inside space-y-1">';
+					filteredMatches.forEach(([di, ri]) => {
+						const donor = donors[di];
+						const recipient = sortedRecipients[ri];
+						const score = scoreMatrix[di][ri];
+						matchesHTML += `
+                        <li class="bg-green-50 p-2 rounded-md border border-green-200">
+                            <strong>Donor ${donor.id}</strong> (Blood: ${donor.bloodGroup}, Organ: ${donor.organType}, City: ${donor.city}, Age: ${donor.age})
+                            <span class="font-bold text-green-700"> &rarr; </span>
+                            <strong>Recipient ${recipient.id}</strong> (Blood: ${recipient.bloodGroup}, Organ: ${recipient.organType}, City: ${recipient.city}, Age: ${recipient.age}, Urgency: ${recipient.urgency})
+                            <span class="font-bold text-green-700"> | Score: ${score}</span>
+                        </li>
+                    `;
+					});
+					matchesHTML += "</ul>";
+					optimalMatchesDisplay.innerHTML = matchesHTML;
+				}
+
+				// Draw the bipartite graph visualization
+				drawGraph(donors, sortedRecipients, filteredMatches, scoreMatrix);
+			});
+
+			/**
+			 * Custom alert function to replace native window.alert.
+			 * Creates a simple modal dialog for messages.
+			 * @param {string} message - The message to display in the alert.
+			 */
+			function customAlert(message) {
+				// Remove any existing custom alert to prevent stacking
+				const existingAlert = document.getElementById("customAlert");
+				if (existingAlert) {
+					existingAlert.remove();
+				}
+
+				// Create the alert dialog structure
+				const alertDiv = document.createElement("div");
+				alertDiv.id = "customAlert";
+				alertDiv.className =
+					"fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50";
+				alertDiv.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full text-center">
+                    <p class="text-lg font-semibold text-gray-800 mb-4">${message}</p>
+                    <button id="alertCloseBtn" class="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out">
+                        OK
+                    </button>
+                </div>
+            `;
+				document.body.appendChild(alertDiv);
+
+				// Add event listener to close the alert when OK button is clicked
+				document
+					.getElementById("alertCloseBtn")
+					.addEventListener("click", () => {
+						alertDiv.remove();
+					});
+			}
+
+			// --- Pre-fed Data ---
+			donors = [
+				new DonorNode("D001", "O+", "Delhi", 30, "Kidney"),
+				new DonorNode("D002", "A-", "Mumbai", 45, "Liver"),
+				new DonorNode("D003", "B+", "Delhi", 28, "Kidney"),
+				new DonorNode("D004", "AB+", "Chennai", 55, "Heart"),
+				new DonorNode("D005", "O-", "Bangalore", 33, "Kidney"),
+				new DonorNode("D006", "A+", "Mumbai", 40, "Liver"),
+				new DonorNode("D007", "B-", "Delhi", 60, "Kidney"),
+			];
+
+			recipients = [
+				new RecipientNode("R001", "A+", "Delhi", 32, 5, "Kidney"),
+				new RecipientNode("R002", "O-", "Mumbai", 48, 4, "Liver"),
+				new RecipientNode("R003", "AB+", "Delhi", 29, 3, "Kidney"),
+				new RecipientNode("R004", "B+", "Chennai", 50, 5, "Heart"),
+				new RecipientNode("R005", "A-", "Bangalore", 35, 2, "Kidney"),
+				new RecipientNode("R006", "O+", "Mumbai", 42, 4, "Liver"),
+				new RecipientNode("R007", "AB-", "Delhi", 65, 1, "Kidney"),
+			];
+
+			// Initial display calls when the page loads
+			displayDonors();
+			displayRecipients();
+		</script>
+	</body>
+</html>
