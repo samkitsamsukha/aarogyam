@@ -50,8 +50,11 @@ const Navbar: React.FC = () => {
             <a href="#faq" className="text-gray-700 hover:text-primary-600 transition-colors">
               FAQs
             </a>
-            <button className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-full transition-colors">
-              Get Started
+            <button
+              className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-full transition-colors"
+              onClick={() => window.location.href = '/auth'}
+            >
+              Login
             </button>
           </div>
 

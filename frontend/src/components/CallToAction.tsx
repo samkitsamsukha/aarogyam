@@ -30,7 +30,7 @@ const CallToAction: React.FC = () => {
               Become a Donor
             </a>
             <a 
-              href="#recipients" 
+              href="/auth"
               className="bg-primary-800 text-white hover:bg-primary-700 px-6 py-3 rounded-full font-medium transition-all"
             >
               Register as a Recipient

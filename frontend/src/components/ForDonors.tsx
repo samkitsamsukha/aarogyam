@@ -65,8 +65,11 @@ const ForDonors: React.FC = () => {
             </div>
             
             <div className="mt-10">
-              <button className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-full font-medium transition-colors">
-                Register as a Donor
+              <button
+              className="bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-full font-medium transition-colors"
+              onClick={() => window.location.href = '/auth'}
+              >
+              Register as a Donor
               </button>
             </div>
           </div>

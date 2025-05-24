@@ -65,9 +65,12 @@ const ForRecipients: React.FC = () => {
             </div>
             
             <div className="mt-10">
-              <button className="bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-3 rounded-full font-medium transition-colors">
+                <a
+                href="/auth"
+                className="bg-secondary-500 hover:bg-secondary-600 text-white px-6 py-3 rounded-full font-medium transition-colors inline-block"
+                >
                 Register as a Recipient
-              </button>
+                </a>
             </div>
           </div>
           
