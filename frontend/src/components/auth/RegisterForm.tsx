@@ -1,28 +1,102 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { UserPlus, Eye, EyeOff } from 'lucide-react';
-import Button from '../ui/Button';
-import FormInput from '../ui/FormInput';
-import RoleSelector from './RoleSelector';
-import axios from 'axios'; // Import axios
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { UserPlus, Eye, EyeOff } from "lucide-react";
+import Button from "../ui/Button";
+import FormInput from "../ui/FormInput";
+import RoleSelector from "./RoleSelector";
+import axios from "axios";
+import useWallet from "../../hooks/useWallet";
+import contractABI from "../../../contracts/contract.abi.json";
+import { toast } from "sonner";
+
+const contractAddress = "0x3e31740428F2d0cE9666B715c838f4855c78EA99";
 
 interface RegisterFormProps {
   onLoginClick: () => void;
 }
 
+let toastId: number | string;
+
 const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'recipient', // Default role
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "recipient", // Default role
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [web3, account, _walletLoading] = useWallet();
+
+  async function registerDonorHandler() {
+    if (!web3 || !account) {
+      console.log("Wallet not connected");
+      return;
+    }
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    contract.methods
+      .registerAsDonor()
+      .send({ from: account })
+      .on("transactionHash", (hash: any) => {
+        console.log("Transaction sent, hash:", hash);
+      })
+      .on("receipt", (receipt: any) => {
+        console.log("Transaction confirmed:", receipt);
+
+        if (receipt.events && receipt.events.Registered) {
+          const event = receipt.events.Registered.returnValues;
+          console.log("Registered event detected:", event);
+          toast.dismiss(toastId);
+          toast.success("Donor registered successfully !!");
+          toast.info("Please login to continue !!");
+          // alert(
+          //   `Registration completed! Role: ${event.role}, Timestamp: ${event.timestamp}`
+          // );
+        }
+      })
+      .on("error", (error: any) => {
+        console.log(error.message);
+      });
+  }
+
+  async function registerRecipientHandler() {
+    if (!web3 || !account) {
+      console.log("Wallet not connected");
+      return;
+    }
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    contract.methods
+      .registerAsRecipient()
+      .send({ from: account })
+      .on("transactionHash", (hash: any) => {
+        console.log("Transaction sent, hash:", hash);
+      })
+      .on("receipt", (receipt: any) => {
+        console.log("Transaction confirmed:", receipt);
+
+        if (receipt.events && receipt.events.Registered) {
+          const event = receipt.events.Registered.returnValues;
+          console.log("Registered event detected:", event);
+          toast.dismiss(toastId);
+          toast.success("Recipient registered successfully !!");
+          toast.info("Please login to continue !!");
+          // alert(
+          //   `Registration completed! Role: ${event.role}, Timestamp: ${event.timestamp}`
+          // );
+        }
+      })
+      .on("error", (error: any) => {
+        console.log(error.message);
+      });
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -42,26 +116,39 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     e.preventDefault();
 
     // Basic validation
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-      setError('Please fill in all required fields');
+    if (
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.email ||
+      !formData.password
+    ) {
+      setError("Please fill in all required fields");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       return;
     }
 
     if (!agreeToTerms) {
-      setError('You must agree to the Terms of Service and Privacy Policy');
+      setError("You must agree to the Terms of Service and Privacy Policy");
       return;
     }
 
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:3000/register', {
+      if (formData.role == "donor") {
+        toastId = toast.loading("Registering donor...");
+        await registerDonorHandler();
+      } else {
+        toastId = toast.loading("Registering recipient...");
+        await registerRecipientHandler();
+      }
+
+      const response = await axios.post("http://localhost:3000/register", {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         password: formData.password,
@@ -69,19 +156,16 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       });
 
       setIsLoading(false);
-      // Registration successful, show success message and redirect to login
-      console.log('Registration successful:', response.data.message);
-      // You might want to set a success message in the state and display it
-      // before redirecting. For now, let's just redirect after a short delay.
+      console.log("Registration successful:", response.data.message);
       setTimeout(onLoginClick, 2000);
     } catch (error: any) {
       setIsLoading(false);
       if (error.response && error.response.data && error.response.data.error) {
         setError(error.response.data.error);
       } else {
-        setError('Registration failed. Please try again.');
+        setError("Registration failed. Please try again.");
       }
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
     }
   };
 
@@ -136,7 +220,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
           </label>
           <div className="relative">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -159,7 +243,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
 
         <FormInput
           label="Confirm Password"
-          type={showPassword ? 'text' : 'password'}
+          type={showPassword ? "text" : "password"}
           name="confirmPassword"
           value={formData.confirmPassword}
           onChange={handleChange}
@@ -176,11 +260,11 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
             className="h-4 w-4 mt-1 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
           />
           <label htmlFor="terms" className="ml-2 block text-sm text-gray-700">
-            I agree to the{' '}
+            I agree to the{" "}
             <a href="#" className="text-primary-600 hover:text-primary-500">
               Terms of Service
-            </a>{' '}
-            and{' '}
+            </a>{" "}
+            and{" "}
             <a href="#" className="text-primary-600 hover:text-primary-500">
               Privacy Policy
             </a>
@@ -198,7 +282,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
 
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
-            Already have an account?{' '}
+            Already have an account?{" "}
             <button
               type="button"
               onClick={onLoginClick}

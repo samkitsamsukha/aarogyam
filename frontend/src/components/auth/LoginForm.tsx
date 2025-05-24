@@ -109,32 +109,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onRegisterClick }) => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <input
-            id="remember-me"
-            type="checkbox"
-            checked={rememberMe}
-            onChange={() => setRememberMe(!rememberMe)}
-            className="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-          />
-          <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-            Remember me
-          </label>
-        </div>
-
-        <button
-          type="button"
-          className="text-sm font-medium text-primary-600 hover:text-primary-500 transition-colors"
-        >
-          Forgot password?
-        </button>
-      </div>
+  
 
       <Button
         type="submit"
         fullWidth
         isLoading={isLoading}
+        className='mt-4'
         icon={<LogIn size={18} />}
       >
         Log In

@@ -10,9 +10,7 @@ interface RoleSelectorProps {
 const RoleSelector: React.FC<RoleSelectorProps> = ({ value, onChange }) => {
   return (
     <div className="mb-4">
-      <p className="text-sm font-medium text-gray-700 mb-2">I want to register as:</p>
-      
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 mt-4">
         <button
           type="button"
           onClick={() => onChange('donor')}
