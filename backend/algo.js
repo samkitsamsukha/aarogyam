@@ -163,20 +163,20 @@ async function checkIfMatchFound() {
     return score != 0;
   });
 
-  // console.log("🧾 Compatibility Matrix:");
-  // console.table(scoreMatrix);
-  // console.log("\n✅ Optimal Matching:");
+  console.log("🧾 Compatibility Matrix:");
+  console.table(scoreMatrix);
+  console.log("\n✅ Optimal Matching:");
 
-  // filteredMatches.forEach(([di, ri]) => {
-  //   const donor = donors[di];
-  //   const recipient = recipients[ri];
-  //   const score = scoreMatrix[di][ri];
-  //   console.log(
-  //     `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
-  //       `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
-  //       `| Score: ${score}`
-  //   );
-  // });
+  filteredMatches.forEach(([di, ri]) => {
+    const donor = donors[di];
+    const recipient = recipients[ri];
+    const score = scoreMatrix[di][ri];
+    console.log(
+      `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
+        `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
+        `| Score: ${score}`
+    );
+  });
 
   // console.log(`\n💯 Maximum Total Matching Score: ${totalScore}`);
 

@@ -75,6 +75,11 @@ const donorSchema = new mongoose.Schema(
 			enum: ["Pending", "Matched", "None", "Transplanted"],
 			default: "None",
 		},
+		matchedRecipient: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Recipient",
+			default: null,
+		}
 	},
 	{ timestamps: true }
 );

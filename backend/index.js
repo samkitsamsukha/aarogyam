@@ -6,40 +6,54 @@ const jwt = require("jsonwebtoken");
 const { checkIfMatchFound } = require("./algo");
 const cors = require("cors");
 
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
 app.use(express.json());
 
-app.use(cors({
-	origin: "*",
-}));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 app.get("/", (req, res) => {
-	res.send("Hello, Express!");
+  res.send("Hello, Express!");
 });
 
+async function injectUserId(req, res, next) {
+  const token = req.headers.authorization;
+  const decoded = jwt.decode(token);
+  const role = decoded.role;
 
+  req.headers.id = decoded.id;
+  if (role == "recipient") {
+    req.headers.role = "recipient";
+  } else {
+    req.headers.role = "donor";
+  }
+
+  next();
+}
 
 app.post("/register", async (req, res) => {
-	await connectDB();
-	const { name, email, password, role } = req.body;
-	if (!name || !email || !password || !role) {
-		return res
-			.status(400)
-			.json({ error: "Name, email, password, and role are required." });
-	}
+  await connectDB();
+  const { name, email, password, role } = req.body;
+  if (!name || !email || !password || !role) {
+    return res
+      .status(400)
+      .json({ error: "Name, email, password, and role are required." });
+  }
 
-	let UserModel;
-	if (role === "donor") {
-		UserModel = Donor;
-	} else if (role === "recipient") {
-		UserModel = Recipient;
-	} else {
-		return res.status(400).json({ error: "Invalid role." });
-	}
+  let UserModel;
+  if (role === "donor") {
+    UserModel = Donor;
+  } else if (role === "recipient") {
+    UserModel = Recipient;
+  } else {
+    return res.status(400).json({ error: "Invalid role." });
+  }
 
   try {
     const existing = await UserModel.findOne({ email });
@@ -48,13 +62,11 @@ app.post("/register", async (req, res) => {
     }
     const user = new UserModel({ name, email, password });
     await user.save();
-    res
-      .status(201)
-      .json({
-        message: `${
-          role.charAt(0).toUpperCase() + role.slice(1)
-        } registered successfully.`,
-      });
+    res.status(201).json({
+      message: `${
+        role.charAt(0).toUpperCase() + role.slice(1)
+      } registered successfully.`,
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Server error." });
@@ -62,38 +74,38 @@ app.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-	await connectDB();
-	const { email, password, role } = req.body;
-	if (!email || !password || !role) {
-		return res
-			.status(400)
-			.json({ error: "Email, password, and role are required." });
-	}
+  await connectDB();
+  const { email, password, role } = req.body;
+  if (!email || !password || !role) {
+    return res
+      .status(400)
+      .json({ error: "Email, password, and role are required." });
+  }
 
-	let UserModel;
-	if (role === "donor") {
-		UserModel = Donor;
-	} else if (role === "recipient") {
-		UserModel = Recipient;
-	} else {
-		return res.status(400).json({ error: "Invalid role." });
-	}
+  let UserModel;
+  if (role === "donor") {
+    UserModel = Donor;
+  } else if (role === "recipient") {
+    UserModel = Recipient;
+  } else {
+    return res.status(400).json({ error: "Invalid role." });
+  }
 
-	try {
-		const user = await UserModel.findOne({ email });
-		if (!user || user.password !== password) {
-			return res.status(401).json({ error: "Invalid credentials." });
-		}
-		const token = jwt.sign(
-			{ id: user._id, email: user.email, role },
-			JWT_SECRET,
-			{ expiresIn: "1h" }
-		);
-		res.json({ token });
-	} catch (err) {
-		console.log(err);
-		res.status(500).json({ error: "Server error." });
-	}
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user || user.password !== password) {
+      return res.status(401).json({ error: "Invalid credentials." });
+    }
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role },
+      JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+    res.json({ token });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Server error." });
+  }
 });
 
 app.post("/onboard-donor", async (req, res) => {
@@ -113,17 +125,17 @@ app.post("/onboard-donor", async (req, res) => {
     status,
   } = req.body;
 
-	if (!email) {
-		return res.status(400).json({ error: "Email is required." });
-	}
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
 
-	try {
-		const donor = await Donor.findOne({ email });
-		if (!donor) {
-			return res
-				.status(404)
-				.json({ error: "Donor not found. Register first." });
-		}
+  try {
+    const donor = await Donor.findOne({ email });
+    if (!donor) {
+      return res
+        .status(404)
+        .json({ error: "Donor not found. Register first." });
+    }
 
     donor.gender = gender ?? donor.gender;
     donor.age = age ?? donor.age;
@@ -160,17 +172,17 @@ app.post("/onboard-recipient", async (req, res) => {
     status,
   } = req.body;
 
-	if (!email) {
-		return res.status(400).json({ error: "Email is required." });
-	}
+  if (!email) {
+    return res.status(400).json({ error: "Email is required." });
+  }
 
-	try {
-		const recipient = await Recipient.findOne({ email });
-		if (!recipient) {
-			return res
-				.status(404)
-				.json({ error: "Recipient not found. Register first." });
-		}
+  try {
+    const recipient = await Recipient.findOne({ email });
+    if (!recipient) {
+      return res
+        .status(404)
+        .json({ error: "Recipient not found. Register first." });
+    }
 
     recipient.gender = gender ?? recipient.gender;
     recipient.age = age ?? recipient.age;
@@ -190,14 +202,45 @@ app.post("/onboard-recipient", async (req, res) => {
   }
 });
 
-app.get('/match', async (req,res)=>{
-    await checkIfMatchFound();
+app.get("/get-info", injectUserId, async (req, res) => {
+  const id = req.headers.id;
+  const role = req.headers.role;
 
+  if (role === "donor") {
+    const donor = await Donor.findById(id);
+    const rid = donor.matchedRecipient?._id;
+    let matched_recipient = null;
+    if (rid) {
+      matched_recipient = await Recipient.findById(rid);
+    }
     return res.json({
-        msg: "Worked !!"
-    })
-})
+      donor,
+      matched_recipient,
+    });
+  } else if (role === "recipient") {
+    const recipient = await Recipient.findById(id);
+    const did = recipient.matchedDonor?._id;
+    let matched_donor = null;
+    if (did) {
+      matched_donor = await Donor.findById(did);
+    }
+    recipient.matchedDonor = matched_donor;
+    return res.json({
+      recipient,
+    });
+  } else {
+    return res.status(400).json({ error: "Invalid role." });
+  }
+});
+
+app.get("/match", async (req, res) => {
+  await checkIfMatchFound();
+
+  return res.json({
+    msg: "Worked !!",
+  });
+});
 
 app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
