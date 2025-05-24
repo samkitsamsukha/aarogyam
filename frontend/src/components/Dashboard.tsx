@@ -1,13 +1,22 @@
-import React from 'react';
-import { useRecipient } from '../context/RecipientContext';
-import RecipientProfile from './recipient/RecipientProfile';
-import DonorProfile from './donor/DonorProfile';
-import Header from './ui/Header';
-import StatusBanner from './ui/StatusBanner';
-import { LoadingSpinner } from './ui/LoadingSpinner';
+import React from "react";
+import { useRecipient } from "../context/RecipientContext";
+import RecipientProfile from "./recipient/RecipientProfile";
+import DonorProfile from "./donor/DonorProfile";
+import Header from "./ui/Header";
+import StatusBanner from "./ui/StatusBanner";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const Dashboard: React.FC = () => {
   const { recipient, loading } = useRecipient();
+
+  const navigate = useNavigate();
+
+  if (recipient?.status == "None") {
+    toast.info("Please complete onboarding process");
+    navigate("/onboarding");
+  }
 
   if (loading) {
     return (
@@ -21,9 +30,12 @@ const Dashboard: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center p-8 max-w-md bg-white shadow-md rounded-lg">
-          <h2 className="text-2xl font-semibold text-red-600 mb-4">No Recipient Data</h2>
+          <h2 className="text-2xl font-semibold text-red-600 mb-4">
+            No Recipient Data
+          </h2>
           <p className="text-gray-600">
-            There seems to be an issue loading the recipient data. Please try again later.
+            There seems to be an issue loading the recipient data. Please try
+            again later.
           </p>
         </div>
       </div>
@@ -40,9 +52,14 @@ const Dashboard: React.FC = () => {
             <RecipientProfile recipient={recipient} />
           </div>
           <div className="lg:col-span-1">
-            {(recipient.status === "Matched" || recipient.status === "Transplanted") && recipient.matchedDonor && (
-              <DonorProfile donor={recipient.matchedDonor} status={recipient.status} />
-            )}
+            {(recipient.status === "Matched" ||
+              recipient.status === "Transplanted") &&
+              recipient.matchedDonor && (
+                <DonorProfile
+                  donor={recipient.matchedDonor}
+                  status={recipient.status}
+                />
+              )}
           </div>
         </div>
       </main>

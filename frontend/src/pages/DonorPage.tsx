@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import DonorDashboard from "../components/DonorDashboard";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function DonorPage() {
   const [donar, setDonar] = useState<any>(null);
   const [recipient, setRecipient] = useState(undefined);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   if (donar) {
     const date = donar.organAvailabilityDate as Date;
@@ -23,6 +26,10 @@ function DonorPage() {
             "Content-Type": "application/json",
           },
         });
+        if (response.data.donor.status == "None") {
+          toast.info("Please complete onboarding process");
+          navigate("/onboarding");
+        }
         setDonar(response.data.donor);
         setRecipient(response.data.matched_recipient);
       } catch (error) {
