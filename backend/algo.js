@@ -163,23 +163,38 @@ async function checkIfMatchFound() {
     return score != 0;
   });
 
-  console.log("🧾 Compatibility Matrix:");
-  console.table(scoreMatrix);
-  console.log("\n✅ Optimal Matching:");
+  const donorRecipientUpdates = filteredMatches.map(async ([di, ri]) => {
+    const donor = donorsDB[di];
+    const recipient = sortedRecipients[ri];
 
-  filteredMatches.forEach(([di, ri]) => {
-    const donor = donors[di];
-    const recipient = recipients[ri];
-    const score = scoreMatrix[di][ri];
-    console.log(
-      `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
-        `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
-        `| Score: ${score}`
-    );
+    await Donor.findByIdAndUpdate(donor._id, {
+      status: "Matched",
+      matchedRecipient: recipient._id,
+    });
+
+    await Recipient.findByIdAndUpdate(recipient._id, {
+      status: "Matched",
+      matchedDonor: donor._id,
+    });
   });
 
-  // console.log(`\n💯 Maximum Total Matching Score: ${totalScore}`);
+  await Promise.all(donorRecipientUpdates);
+  console.log("\n📬 Updated donor and recipient statuses to 'Matched'");
 
+  // console.log("🧾 Compatibility Matrix:");
+  // console.table(scoreMatrix);
+  // console.log("\n✅ Optimal Matching:");
+
+  // filteredMatches.forEach(([di, ri]) => {
+  //   const donor = donors[di];
+  //   const recipient = recipients[ri];
+  //   const score = scoreMatrix[di][ri];
+  //   console.log(
+  //     `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
+  //       `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
+  //       `| Score: ${score}`
+  //   );
+  // });
 
   // now send the mail to matched parties
 }
@@ -187,4 +202,3 @@ async function checkIfMatchFound() {
 module.exports = {
   checkIfMatchFound,
 };
-  
