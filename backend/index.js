@@ -244,3 +244,13 @@ app.get("/match", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+app.get("/recipients", async (req, res) => {
+  await connectDB();
+  try {
+    const recipients = await Recipient.find();
+    res.json(recipients);
+  } catch (err) {
+    res.status(500).json({ error: "Server error." });
+  }
+});

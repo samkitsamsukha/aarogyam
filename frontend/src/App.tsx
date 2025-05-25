@@ -6,6 +6,7 @@ import RecipientPage from "./pages/RecipientPage";
 import { Toaster } from "sonner";
 import DonarOnboard from "./pages/DonarOnboard";
 import RecipientOnboard from "./pages/RecipientOnboard";
+import RecipientQueue from "./pages/RecipientQueue";
 function App() {
   return (
     <>
@@ -17,6 +18,7 @@ function App() {
           <Route path="/recipient-dashboard" element={<RecipientPage />} />
           <Route path="/donor-onboard" element={<DonarOnboard />} />
           <Route path="/recipient-onboard" element={<RecipientOnboard />} />
+          <Route path="/recipient-queue" element={<RecipientQueue />} />
         </Routes>
       </Router>
       <Toaster />
