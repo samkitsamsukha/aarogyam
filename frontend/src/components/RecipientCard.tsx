@@ -103,7 +103,7 @@ const RecipientCard: React.FC<RecipientCardProps> = ({ recipient }) => {
           
           <div className="col-span-2">
             <p className="text-xs text-gray-500">Email</p>
-            <p className="font-medium blur-[2px] hover:blur-none transition-all duration-300 select-none">
+            <p className="font-medium blur-[8px] hover:blur-none transition-all duration-300 select-none">
               {recipient.email}
             </p>
           </div>

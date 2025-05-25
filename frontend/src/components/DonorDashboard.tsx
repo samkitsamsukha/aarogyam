@@ -4,6 +4,7 @@ import DonorInfo from "./DonorInfo";
 import MedicalHistory from "./MedicalHistory";
 import RecipientInfo from "./RecipientInfo";
 import { Activity, UserRound, MapPin, FileText } from "lucide-react";
+import Logout from "./Logout";
 
 interface DonorDashboardProps {
   donor: Donor;
@@ -27,7 +28,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
             <h1 className="text-2xl font-bold text-white">Donor Dashboard</h1>
             <div className="flex flex-row gap-6 items-center">
               <span className="text-teal-100">Welcome, {donor.name}</span>
-              <button className="bg-white px-2 py-1 rounded-md text-sm transition-all duration-200 hover:scale-105">Log Out</button>
+              <Logout />
             </div>
           </div>
         </div>
@@ -151,7 +152,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
         </div>
       </main>
 
-      <footer className="bg-gray-800 text-gray-300 py-8 mt-12">
+      {/* <footer className="bg-gray-800 text-gray-300 py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
@@ -178,7 +179,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
             &copy; {new Date().getFullYear()} Organ Donation Network. All rights reserved.
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
