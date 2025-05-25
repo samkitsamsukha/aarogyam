@@ -1,8 +1,17 @@
 const { connectDB } = require("./db/db");
+const { recipientMailHtml } = require("./html_templates/main");
 const Donor = require("./models/donorModel");
 const Recipient = require("./models/recipientModel");
-
+const nodemailer = require("nodemailer");
 require("dotenv").config();
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.MAIL_USER,
+    pass: process.env.MAIL_PASS,
+  },
+});
 
 class DonorNode {
   constructor(id, bloodGroup, city, age, organType) {
@@ -176,27 +185,22 @@ async function checkIfMatchFound() {
       status: "Matched",
       matchedDonor: donor._id,
     });
+
+    const emailHtml = recipientMailHtml(
+      recipient.name,
+      donor,
+      new Date().getFullYear()
+    );
+
+    await transporter.sendMail({
+      to: recipient.email,
+      subject: "Donor Match Found - Aarogyam",
+      html: emailHtml,
+    });
   });
 
   await Promise.all(donorRecipientUpdates);
   console.log("\n📬 Updated donor and recipient statuses to 'Matched'");
-
-  // console.log("🧾 Compatibility Matrix:");
-  // console.table(scoreMatrix);
-  // console.log("\n✅ Optimal Matching:");
-
-  // filteredMatches.forEach(([di, ri]) => {
-  //   const donor = donors[di];
-  //   const recipient = recipients[ri];
-  //   const score = scoreMatrix[di][ri];
-  //   console.log(
-  //     `Donor ${di} (${donor.bloodGroup}, ${donor.city}, ${donor.age}, ${donor.organType}) ` +
-  //       `→ Recipient ${ri} (${recipient.bloodGroup}, ${recipient.city}, ${recipient.age}, ${recipient.organType}, urgency ${recipient.urgency}) ` +
-  //       `| Score: ${score}`
-  //   );
-  // });
-
-  // now send the mail to matched parties
 }
 
 module.exports = {
