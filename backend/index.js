@@ -148,7 +148,7 @@ app.post("/onboard-donor", async (req, res) => {
     donor.medicalHistory = medicalHistory ?? donor.medicalHistory;
     donor.geoLocation = geoLocation ?? donor.geoLocation;
     donor.proof = proof ?? donor.proof;
-    donor.status = status ?? donor.status;
+    donor.status = "Pending";
 
     await donor.save();
     res.json({ message: "Donor onboarded successfully.", donor });
@@ -193,7 +193,7 @@ app.post("/onboard-recipient", async (req, res) => {
     recipient.medicalCondition = medicalCondition ?? recipient.medicalCondition;
     recipient.geoLocation = geoLocation ?? recipient.geoLocation;
     recipient.proof = proof ?? recipient.proof;
-    recipient.status = status ?? recipient.status;
+    recipient.status = "Pending";
 
     await recipient.save();
     res.json({ message: "Recipient onboarded successfully.", recipient });
