@@ -1,7 +1,7 @@
 export interface Testimonial {
   id: number;
   name: string;
-  role: string; // 'donor' or 'recipient'
+  role: string; 
   quote: string;
   image: string;
 }
@@ -87,4 +87,9 @@ export interface Recipient {
   matchedDonor: Donor;
   createdAt?: Date;
   updatedAt?: Date;
+}
+
+export interface MatchedPair {
+  donor: Donor;
+  recipient: Recipient;
 }

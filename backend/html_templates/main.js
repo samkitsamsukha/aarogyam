@@ -1,4 +1,5 @@
 const recipientMailHtml = (
+  _id,
   recipientName,
   donor,
   year
@@ -19,7 +20,7 @@ const recipientMailHtml = (
   <!DOCTYPE html>
   <html>
   <head>
-    <title>Suitable Donor Matched</title>
+    <title>Donor Match - Aarogyam</title>
     <style>
       body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
       .container { width: 80%; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
@@ -31,12 +32,23 @@ const recipientMailHtml = (
       th { background-color: #f9f9f9; }
       .highlight { font-weight: bold; }
       .nested-table { width: 95%; margin-left: 5%; }
+      .button {
+        display: inline-block;
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        margin: 20px 0;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 5px;
+      }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <h2>Organ Donor Match Found</h2>
+        <h2>Aarogyam - Organ Donor Match Found</h2>
       </div>
       <div class="content">
         <p>Dear ${recipientName},</p>
@@ -76,13 +88,16 @@ const recipientMailHtml = (
           </tr>
         </table>
 
-        <p>Please review the attached donor schema information carefully. We kindly request you to proceed with the necessary steps to confirm the transplantation at your earliest convenience.</p>
-        <p>If you have any questions or require further information, please do not hesitate to contact us.</p>
+        <p>Please review the donor's information carefully. To view your match details and proceed further, click below:</p>
+
+        <a href="http://localhost:5173/match?id=${_id}" class="button">View Match Details</a>
+
+        <p>If you have any questions or require further assistance, feel free to contact us.</p>
         <p>Sincerely,</p>
-        <p>The Organ Matching Team</p>
+        <p><strong>The Aarogyam Team</strong></p>
       </div>
       <div class="footer">
-        <p>&copy; ${year} Organ Donation Services. All rights reserved.</p>
+        <p>&copy; ${year} Aarogyam. All rights reserved.</p>
       </div>
     </div>
   </body>

@@ -248,9 +248,66 @@ app.listen(PORT, () => {
 app.get("/recipients", async (req, res) => {
   await connectDB();
   try {
-    const recipients = await Recipient.find();
+    const recipients = await Recipient.find({ status: "Pending" });
     res.json(recipients);
   } catch (err) {
+    res.status(500).json({ error: "Server error." });
+  }
+});
+
+app.get("/get-match", async (req, res) => {
+  await connectDB();
+  const { id } = req.query;
+  const recipientId = id;
+
+  if (!recipientId) {
+    return res.status(400).json({ error: "recipientId query param is required." });
+  }
+  try {
+    const recipient = await Recipient.findById(recipientId);
+    if (!recipient) {
+      return res.status(404).json({ error: "Recipient not found." });
+    }
+    const matchedDonorId = recipient.matchedDonor?._id || recipient.matchedDonor;
+    let matchedDonor = null;
+    if (matchedDonorId) {
+      matchedDonor = await Donor.findById(matchedDonorId);
+    }
+    res.json({
+      recipient,
+      donor: matchedDonor,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Server error." });
+  }
+});
+
+app.post("/match-confirm", async (req, res) => {
+  await connectDB();
+  const { id } = req.query;
+  if (!id) {
+    return res.status(400).json({ error: "Recipient id is required as query param." });
+  }
+  try {
+    const recipient = await Recipient.findById(id);
+    if (!recipient) {
+      return res.status(404).json({ error: "Recipient not found." });
+    }
+    const matchedDonorId = recipient.matchedDonor?._id || recipient.matchedDonor;
+    if (!matchedDonorId) {
+      return res.status(404).json({ error: "No matched donor found for this recipient." });
+    }
+    const donor = await Donor.findById(matchedDonorId);
+    if (!donor) {
+      return res.status(404).json({ error: "Matched donor not found." });
+    }
+    recipient.status = "Transplanted";
+    donor.status = "Transplanted";
+    await recipient.save();
+    await donor.save();
+    res.json({ message: "Status updated to Transplanted for both recipient and donor." });
+  } catch (err) {
+    console.log(err)
     res.status(500).json({ error: "Server error." });
   }
 });

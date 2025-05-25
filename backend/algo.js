@@ -187,6 +187,7 @@ async function checkIfMatchFound() {
     });
 
     const emailHtml = recipientMailHtml(
+      recipient._id,
       recipient.name,
       donor,
       new Date().getFullYear()
