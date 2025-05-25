@@ -1,6 +1,12 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import useWallet from "../hooks/useWallet";
+import contractABI from "../../contracts/contract.abi.json";
+import { useNavigate } from "react-router-dom";
+
+const contractAddress = "0x3e31740428F2d0cE9666B715c838f4855c78EA99";
+let toastId: string | number;
 
 interface MedicalCondition {
   diagnosis: string;
@@ -28,7 +34,14 @@ interface RecipientFormData {
   email: string;
   phone: string;
   bloodType: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-" | "";
-  requiredOrgan: "Kidney" | "Liver" | "Heart" | "Lung" | "Pancreas" | "Intestine" | "";
+  requiredOrgan:
+    | "Kidney"
+    | "Liver"
+    | "Heart"
+    | "Lung"
+    | "Pancreas"
+    | "Intestine"
+    | "";
   medicalCondition: MedicalCondition;
   geoLocation: GeoLocation;
   proof: string; // URL
@@ -89,7 +102,10 @@ const FormInput: React.FC<FormInputProps> = ({
   isTextArea = false,
 }) => (
   <div className="mb-4">
-    <label htmlFor={id} className="block text-teal-700 dark:text-teal-300 font-semibold mb-2">
+    <label
+      htmlFor={id}
+      className="block text-teal-700 dark:text-teal-300 font-semibold mb-2"
+    >
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     {isTextArea ? (
@@ -139,7 +155,10 @@ const FormSelect: React.FC<FormSelectProps> = ({
   required = false,
 }) => (
   <div className="mb-4">
-    <label htmlFor={id} className="block text-teal-700 dark:text-teal-300 font-semibold mb-2">
+    <label
+      htmlFor={id}
+      className="block text-teal-700 dark:text-teal-300 font-semibold mb-2"
+    >
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <select
@@ -150,9 +169,13 @@ const FormSelect: React.FC<FormSelectProps> = ({
       required={required}
       className="w-full px-3 py-2 border border-teal-300 dark:border-teal-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
     >
-      <option value="" disabled>Select {label.toLowerCase()}</option>
-      {options.map(option => (
-        <option key={option.value} value={option.value}>{option.label}</option>
+      <option value="" disabled>
+        Select {label.toLowerCase()}
+      </option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
       ))}
     </select>
   </div>
@@ -166,7 +189,13 @@ interface FormCheckboxProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const FormCheckbox: React.FC<FormCheckboxProps> = ({ label, id, name, checked, onChange }) => (
+const FormCheckbox: React.FC<FormCheckboxProps> = ({
+  label,
+  id,
+  name,
+  checked,
+  onChange,
+}) => (
   <div className="mb-4 flex items-center">
     <input
       type="checkbox"
@@ -176,7 +205,10 @@ const FormCheckbox: React.FC<FormCheckboxProps> = ({ label, id, name, checked, o
       onChange={onChange}
       className="h-5 w-5 text-aqua-600 dark:text-aqua-500 border-teal-300 dark:border-teal-600 rounded focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800"
     />
-    <label htmlFor={id} className="ml-2 text-teal-700 dark:text-teal-300 font-medium">
+    <label
+      htmlFor={id}
+      className="ml-2 text-teal-700 dark:text-teal-300 font-medium"
+    >
       {label}
     </label>
   </div>
@@ -186,7 +218,10 @@ const RecipientOnboard: React.FC = () => {
   const [formData, setFormData] = useState<RecipientFormData>(initialFormData);
   const [chronicDiseasesInput, setChronicDiseasesInput] = useState<string>("");
   const [allergiesInput, setAllergiesInput] = useState<string>("");
-  const [recentMedicationsInput, setRecentMedicationsInput] = useState<string>("");
+  const [recentMedicationsInput, setRecentMedicationsInput] =
+    useState<string>("");
+  const [web3, account, _walletLoading] = useWallet();
+  const navigate = useNavigate();
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -194,8 +229,10 @@ const RecipientOnboard: React.FC = () => {
     const { name, value, type } = e.target;
 
     if (name.startsWith("medicalCondition.infections.")) {
-      const infectionName = name.split(".").pop() as keyof RecipientFormData['medicalCondition']['infections'];
-      setFormData(prev => ({
+      const infectionName = name
+        .split(".")
+        .pop() as keyof RecipientFormData["medicalCondition"]["infections"];
+      setFormData((prev) => ({
         ...prev,
         medicalCondition: {
           ...prev.medicalCondition,
@@ -206,17 +243,24 @@ const RecipientOnboard: React.FC = () => {
         },
       }));
     } else if (name.startsWith("medicalCondition.")) {
-      const medicalField = name.split(".").pop() as keyof RecipientFormData['medicalCondition'];
-      setFormData(prev => ({
+      const medicalField = name
+        .split(".")
+        .pop() as keyof RecipientFormData["medicalCondition"];
+      setFormData((prev) => ({
         ...prev,
         medicalCondition: {
           ...prev.medicalCondition,
-          [medicalField]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+          [medicalField]:
+            type === "checkbox"
+              ? (e.target as HTMLInputElement).checked
+              : value,
         },
       }));
     } else if (name.startsWith("geoLocation.")) {
-      const geoField = name.split(".").pop() as keyof RecipientFormData['geoLocation'];
-      setFormData(prev => ({
+      const geoField = name
+        .split(".")
+        .pop() as keyof RecipientFormData["geoLocation"];
+      setFormData((prev) => ({
         ...prev,
         geoLocation: {
           ...prev.geoLocation,
@@ -224,45 +268,92 @@ const RecipientOnboard: React.FC = () => {
         },
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+        [name]:
+          type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
       }));
     }
   };
 
+  async function registerRecipientHandler() {
+    if (!web3 || !account) {
+      console.log("Wallet not connected");
+      return;
+    }
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    contract.methods
+      .registerAsRecipient()
+      .send({ from: account })
+      .on("transactionHash", (hash: any) => {
+        console.log("Transaction sent, hash:", hash);
+      })
+      .on("receipt", (receipt: any) => {
+        if (receipt.events && receipt.events.Registered) {
+          const event = receipt.events.Registered.returnValues;
+          console.log("Registered event detected:", event);
+          toast.dismiss(toastId);
+          toast.success("Recipient onboarded successfully !!");
+          navigate("/recipient-dashboard");
+        }
+      })
+      .on("error", (error: any) => {
+        toast.error("Account already registered !!");
+        navigate("/login");
+        console.log(error.message);
+      });
+  }
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
-    // Prepare data for submission (e.g., convert strings to numbers, split arrays)
+
     const submittedData: RecipientFormData = {
       ...formData,
-      age: formData.age === "" ? 0 : Number(formData.age), // Handle empty string for age
+      age: formData.age === "" ? 0 : Number(formData.age),
       geoLocation: {
-        lat: formData.geoLocation.lat === "" ? 0 : Number(formData.geoLocation.lat),
-        lng: formData.geoLocation.lng === "" ? 0 : Number(formData.geoLocation.lng),
+        lat:
+          formData.geoLocation.lat === ""
+            ? 0
+            : Number(formData.geoLocation.lat),
+        lng:
+          formData.geoLocation.lng === ""
+            ? 0
+            : Number(formData.geoLocation.lng),
       },
       medicalCondition: {
         ...formData.medicalCondition,
-        chronicDiseases: chronicDiseasesInput.split(',').map(s => s.trim()).filter(s => s),
-        allergies: allergiesInput.split(',').map(s => s.trim()).filter(s => s),
-        recentMedications: recentMedicationsInput.split(',').map(s => s.trim()).filter(s => s),
-      }
+        chronicDiseases: chronicDiseasesInput
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s),
+        allergies: allergiesInput
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s),
+        recentMedications: recentMedicationsInput
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s),
+      },
     };
-    
-    toast.promise(
-      axios.post("http://localhost:3000/onboard-recipient", submittedData),
-      {
-        loading: "Submitting recipient data...",
-        success: "Recipient onboarded successfully!",
-        error: "Failed to onboard recipient.",
-      }
-    );
 
-    setFormData(initialFormData);
-    setChronicDiseasesInput("");
-    setAllergiesInput("");
-    setRecentMedicationsInput("");
+    toastId = toast.loading("Registering recipient ...");
+    axios
+      .post("http://localhost:3000/onboard-recipient", submittedData)
+      .then(async () => {
+        setFormData(initialFormData);
+        setChronicDiseasesInput("");
+        setAllergiesInput("");
+        setRecentMedicationsInput("");
+
+        await registerRecipientHandler();
+      })
+      .catch(() => {
+        toast.dismiss(toastId);
+        toast.error("Error registering recipient !!");
+      });
   };
 
   const genderOptions = [
@@ -272,16 +363,23 @@ const RecipientOnboard: React.FC = () => {
   ];
 
   const bloodTypeOptions = [
-    { value: "A+", label: "A+" }, { value: "A-", label: "A-" },
-    { value: "B+", label: "B+" }, { value: "B-", label: "B-" },
-    { value: "AB+", label: "AB+" }, { value: "AB-", label: "AB-" },
-    { value: "O+", label: "O+" }, { value: "O-", label: "O-" },
+    { value: "A+", label: "A+" },
+    { value: "A-", label: "A-" },
+    { value: "B+", label: "B+" },
+    { value: "B-", label: "B-" },
+    { value: "AB+", label: "AB+" },
+    { value: "AB-", label: "AB-" },
+    { value: "O+", label: "O+" },
+    { value: "O-", label: "O-" },
   ];
 
   const organOptions = [
-    { value: "Kidney", label: "Kidney" }, { value: "Liver", label: "Liver" },
-    { value: "Heart", label: "Heart" }, { value: "Lung", label: "Lung" },
-    { value: "Pancreas", label: "Pancreas" }, { value: "Intestine", label: "Intestine" },
+    { value: "Kidney", label: "Kidney" },
+    { value: "Liver", label: "Liver" },
+    { value: "Heart", label: "Heart" },
+    { value: "Lung", label: "Lung" },
+    { value: "Pancreas", label: "Pancreas" },
+    { value: "Intestine", label: "Intestine" },
   ];
 
   return (
@@ -293,79 +391,204 @@ const RecipientOnboard: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information Section */}
           <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">Personal Information</legend>
+            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+              Personal Information
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <FormSelect label="Gender" id="gender" name="gender" value={formData.gender} onChange={handleChange} options={genderOptions} />
-              <FormInput label="Age" id="age" name="age" type="number" value={formData.age} onChange={handleChange} placeholder="e.g., 35" />
+              <FormSelect
+                label="Gender"
+                id="gender"
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                options={genderOptions}
+              />
+              <FormInput
+                label="Age"
+                id="age"
+                name="age"
+                type="number"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="e.g., 35"
+              />
             </div>
-            <FormInput label="Email" id="email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="recipient@example.com" />
-            <FormInput label="Phone" id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} pattern="^[0-9]{10,15}$" placeholder="e.g., 1234567890" />
-            <FormSelect label="Blood Type" id="bloodType" name="bloodType" value={formData.bloodType} onChange={handleChange} options={bloodTypeOptions} />
-            <FormSelect label="Required Organ" id="requiredOrgan" name="requiredOrgan" value={formData.requiredOrgan} onChange={handleChange} options={organOptions} />
+            <FormInput
+              label="Email"
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              placeholder="recipient@example.com"
+            />
+            <FormInput
+              label="Phone"
+              id="phone"
+              name="phone"
+              type="tel"
+              value={formData.phone}
+              onChange={handleChange}
+              pattern="^[0-9]{10,15}$"
+              placeholder="e.g., 1234567890"
+            />
+            <FormSelect
+              label="Blood Type"
+              id="bloodType"
+              name="bloodType"
+              value={formData.bloodType}
+              onChange={handleChange}
+              options={bloodTypeOptions}
+            />
+            <FormSelect
+              label="Required Organ"
+              id="requiredOrgan"
+              name="requiredOrgan"
+              value={formData.requiredOrgan}
+              onChange={handleChange}
+              options={organOptions}
+            />
           </fieldset>
 
           {/* Medical Condition Section */}
           <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">Medical Condition</legend>
+            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+              Medical Condition
+            </legend>
             <div className="mt-4 space-y-4">
-              <FormInput label="Diagnosis" id="diagnosis" name="medicalCondition.diagnosis" value={formData.medicalCondition.diagnosis} onChange={handleChange} isTextArea placeholder="Brief medical diagnosis" />
-              
-              <FormInput 
-                label="Chronic Diseases (comma-separated)" 
-                id="chronicDiseases" 
-                name="chronicDiseases" 
-                value={chronicDiseasesInput} 
-                onChange={(e) => setChronicDiseasesInput(e.target.value)}
-                placeholder="e.g., Diabetes, Hypertension" 
+              <FormInput
+                label="Diagnosis"
+                id="diagnosis"
+                name="medicalCondition.diagnosis"
+                value={formData.medicalCondition.diagnosis}
+                onChange={handleChange}
+                isTextArea
+                placeholder="Brief medical diagnosis"
               />
-              
+
+              <FormInput
+                label="Chronic Diseases (comma-separated)"
+                id="chronicDiseases"
+                name="chronicDiseases"
+                value={chronicDiseasesInput}
+                onChange={(e) => setChronicDiseasesInput(e.target.value)}
+                placeholder="e.g., Diabetes, Hypertension"
+              />
+
               <div>
-                <h3 className="text-md font-semibold text-teal-700 dark:text-teal-300 mb-2">Infections:</h3>
+                <h3 className="text-md font-semibold text-teal-700 dark:text-teal-300 mb-2">
+                  Infections:
+                </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <FormCheckbox label="HIV" id="hiv" name="medicalCondition.infections.hiv" checked={formData.medicalCondition.infections.hiv} onChange={handleChange} />
-                    <FormCheckbox label="Hepatitis" id="hepatitis" name="medicalCondition.infections.hepatitis" checked={formData.medicalCondition.infections.hepatitis} onChange={handleChange} />
-                    <FormCheckbox label="Tuberculosis" id="tuberculosis" name="medicalCondition.infections.tuberculosis" checked={formData.medicalCondition.infections.tuberculosis} onChange={handleChange} />
+                  <FormCheckbox
+                    label="HIV"
+                    id="hiv"
+                    name="medicalCondition.infections.hiv"
+                    checked={formData.medicalCondition.infections.hiv}
+                    onChange={handleChange}
+                  />
+                  <FormCheckbox
+                    label="Hepatitis"
+                    id="hepatitis"
+                    name="medicalCondition.infections.hepatitis"
+                    checked={formData.medicalCondition.infections.hepatitis}
+                    onChange={handleChange}
+                  />
+                  <FormCheckbox
+                    label="Tuberculosis"
+                    id="tuberculosis"
+                    name="medicalCondition.infections.tuberculosis"
+                    checked={formData.medicalCondition.infections.tuberculosis}
+                    onChange={handleChange}
+                  />
                 </div>
               </div>
 
-              <FormInput 
-                label="Allergies (comma-separated)" 
-                id="allergies" 
-                name="allergies" 
-                value={allergiesInput} 
+              <FormInput
+                label="Allergies (comma-separated)"
+                id="allergies"
+                name="allergies"
+                value={allergiesInput}
                 onChange={(e) => setAllergiesInput(e.target.value)}
-                placeholder="e.g., Penicillin, Peanuts" 
+                placeholder="e.g., Penicillin, Peanuts"
               />
-              <FormCheckbox label="Previous Transplants" id="previousTransplants" name="medicalCondition.previousTransplants" checked={formData.medicalCondition.previousTransplants} onChange={handleChange} />
-              
-              <FormInput 
-                label="Recent Medications (comma-separated)" 
-                id="recentMedications" 
-                name="recentMedications" 
-                value={recentMedicationsInput} 
+              <FormCheckbox
+                label="Previous Transplants"
+                id="previousTransplants"
+                name="medicalCondition.previousTransplants"
+                checked={formData.medicalCondition.previousTransplants}
+                onChange={handleChange}
+              />
+
+              <FormInput
+                label="Recent Medications (comma-separated)"
+                id="recentMedications"
+                name="recentMedications"
+                value={recentMedicationsInput}
                 onChange={(e) => setRecentMedicationsInput(e.target.value)}
-                placeholder="e.g., Aspirin, Metformin" 
+                placeholder="e.g., Aspirin, Metformin"
               />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormCheckbox label="Smoking History" id="smokingHistory" name="medicalCondition.smokingHistory" checked={formData.medicalCondition.smokingHistory} onChange={handleChange} />
-                <FormCheckbox label="Alcohol Use" id="alcoholUse" name="medicalCondition.alcoholUse" checked={formData.medicalCondition.alcoholUse} onChange={handleChange} />
+                <FormCheckbox
+                  label="Smoking History"
+                  id="smokingHistory"
+                  name="medicalCondition.smokingHistory"
+                  checked={formData.medicalCondition.smokingHistory}
+                  onChange={handleChange}
+                />
+                <FormCheckbox
+                  label="Alcohol Use"
+                  id="alcoholUse"
+                  name="medicalCondition.alcoholUse"
+                  checked={formData.medicalCondition.alcoholUse}
+                  onChange={handleChange}
+                />
               </div>
             </div>
           </fieldset>
 
           {/* GeoLocation Section */}
           <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">GeoLocation</legend>
+            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+              GeoLocation
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <FormInput label="Latitude" id="lat" name="geoLocation.lat" type="number" value={formData.geoLocation.lat} onChange={handleChange} placeholder="e.g., 34.0522" />
-              <FormInput label="Longitude" id="lng" name="geoLocation.lng" type="number" value={formData.geoLocation.lng} onChange={handleChange} placeholder="e.g., -118.2437" />
+              <FormInput
+                label="Latitude"
+                id="lat"
+                name="geoLocation.lat"
+                type="number"
+                value={formData.geoLocation.lat}
+                onChange={handleChange}
+                placeholder="e.g., 34.0522"
+              />
+              <FormInput
+                label="Longitude"
+                id="lng"
+                name="geoLocation.lng"
+                type="number"
+                value={formData.geoLocation.lng}
+                onChange={handleChange}
+                placeholder="e.g., -118.2437"
+              />
             </div>
           </fieldset>
 
           {/* Proof Section */}
           <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">Proof of Condition</legend>
-             <FormInput label="Proof URL" id="proof" name="proof" type="url" value={formData.proof} onChange={handleChange} placeholder="https://example.com/proof.pdf" />
+            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+              Proof of Condition
+            </legend>
+            <FormInput
+              label="Proof URL"
+              id="proof"
+              name="proof"
+              type="url"
+              value={formData.proof}
+              onChange={handleChange}
+              placeholder="https://example.com/proof.pdf"
+            />
           </fieldset>
 
           <button

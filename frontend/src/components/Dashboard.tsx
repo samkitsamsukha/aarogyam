@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
 
   if (recipient?.status == "None") {
     toast.info("Please complete onboarding process");
-    navigate("/onboarding");
+    navigate("/recipient-onboard");
   }
 
   if (loading) {

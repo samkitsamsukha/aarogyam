@@ -1,6 +1,12 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import axios from "axios";
 import { toast } from "sonner";
+import useWallet from "../hooks/useWallet";
+import contractABI from "../../contracts/contract.abi.json";
+import { useNavigate } from "react-router-dom";
+
+const contractAddress = "0x3e31740428F2d0cE9666B715c838f4855c78EA99";
+let toastId: string | number;
 
 // Interface for Form Data
 interface DonorFormData {
@@ -313,6 +319,42 @@ export default function DonarOnboard(): JSX.Element {
     return Object.keys(newErrors).length === 0;
   };
 
+  const [web3, account, _walletLoading] = useWallet();
+
+  const navigate = useNavigate();
+
+  async function registerDonorHandler() {
+    if (!web3 || !account) {
+      console.log("Wallet not connected");
+      return;
+    }
+
+    const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+    contract.methods
+      .registerAsDonor()
+      .send({ from: account })
+      .on("transactionHash", (hash: any) => {
+        console.log("Transaction sent, hash:", hash);
+      })
+      .on("receipt", (receipt: any) => {
+        console.log("Transaction confirmed:", receipt);
+
+        if (receipt.events && receipt.events.Registered) {
+          const event = receipt.events.Registered.returnValues;
+          console.log("Registered event detected:", event);
+          toast.dismiss(toastId);
+          toast.success("Donor onboarded successfully !!");
+          navigate('/donor-dashboard')
+        }
+      })
+      .on("error", (error: any) => {
+        toast.error("Account already registered !!");
+        navigate('/login')
+        console.log(error.message);
+      });
+  }
+
   // Handle form submission
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -351,17 +393,20 @@ export default function DonarOnboard(): JSX.Element {
       };
       console.log("Donor Onboarding Data (Typed):", submissionData);
 
-      toast.promise(
-        axios.post("http://localhost:3000/onboard-donor", submissionData),
-        {
-          loading: "Submitting donor information...",
-          success: "Donor information submitted successfully!",
-          error: "Failed to submit donor information. Please try again.",
-        }
-      );
+      toastId = toast.loading("Registering donor ...");
+      axios
+        .post("http://localhost:3000/onboard-donor", submissionData)
+        .then(async () => {
+          await registerDonorHandler();
+        })
+        .catch((e) => {
+          console.log(e)
+          toast.dismiss(toastId);
+          toast.error("Error registering donor !!");
+        });
     } else {
       console.log("Form validation failed:", errors);
-      alert("Please correct the errors in the form.");
+      toast.error("Please correct the errors in the form.");
     }
   };
 

@@ -48,11 +48,19 @@ export default {
         sans: ['Inter', 'sans-serif'],
       },
       animation: {
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        // Existing animations
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite', // Note: Tailwind has a 'pulse'. This is a slower custom one.
         'fade-in': 'fadeIn 0.5s ease-in',
         'slide-up': 'slideUp 0.5s ease-out',
+
+        // New animations
+        'spin-slow': 'spin 3s linear infinite', // Slower spin
+        'bounce-gentle': 'bounceGentle 2s infinite', // A gentler bounce
+        'flow-path': 'flowPath 3s ease-in-out infinite', // For movement along a path
+        'ping-custom': 'pingCustom 1.5s cubic-bezier(0, 0, 0.2, 1) infinite', // A custom ping
       },
       keyframes: {
+        // Existing keyframes
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
@@ -60,6 +68,40 @@ export default {
         slideUp: {
           '0%': { transform: 'translateY(20px)', opacity: '0' },
           '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        // Keyframes for Tailwind's 'pulse' (if you want to customize it or see its structure)
+        // pulse: {
+        //   '0%, 100%': { opacity: '1' },
+        //   '50%': { opacity: '.5' },
+        // },
+
+        // New keyframes
+        spin: { // Tailwind already has 'spin', this is if you need to define it explicitly or customize
+          to: {
+            transform: 'rotate(360deg)',
+          },
+        },
+        bounceGentle: {
+          '0%, 100%': {
+            transform: 'translateY(-5%)',
+            animationTimingFunction: 'cubic-bezier(0.8,0,1,1)',
+          },
+          '50%': {
+            transform: 'none',
+            animationTimingFunction: 'cubic-bezier(0,0,0.2,1)',
+          },
+        },
+        flowPath: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '20%': { opacity: '1' },
+          '80%': { opacity: '1' },
+          '100%': { transform: 'translateX(100%)', opacity: '0' }, // Adjust translateX for desired distance
+        },
+        pingCustom: { // Similar to Tailwind's ping but customizable
+          '75%, 100%': {
+            transform: 'scale(1.8)', // Max scale
+            opacity: '0',
+          },
         },
       },
     },

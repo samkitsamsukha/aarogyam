@@ -5,17 +5,11 @@ import Button from "../ui/Button";
 import FormInput from "../ui/FormInput";
 import RoleSelector from "./RoleSelector";
 import axios from "axios";
-import useWallet from "../../hooks/useWallet";
-import contractABI from "../../../contracts/contract.abi.json";
 import { toast } from "sonner";
-
-const contractAddress = "0x3e31740428F2d0cE9666B715c838f4855c78EA99";
 
 interface RegisterFormProps {
   onLoginClick: () => void;
 }
-
-let toastId: number | string;
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
   const [formData, setFormData] = useState({
@@ -24,79 +18,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "recipient", // Default role
+    role: "recipient",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [agreeToTerms, setAgreeToTerms] = useState(false);
-  const [web3, account, _walletLoading] = useWallet();
-
-  async function registerDonorHandler() {
-    if (!web3 || !account) {
-      console.log("Wallet not connected");
-      return;
-    }
-
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-    contract.methods
-      .registerAsDonor()
-      .send({ from: account })
-      .on("transactionHash", (hash: any) => {
-        console.log("Transaction sent, hash:", hash);
-      })
-      .on("receipt", (receipt: any) => {
-        console.log("Transaction confirmed:", receipt);
-
-        if (receipt.events && receipt.events.Registered) {
-          const event = receipt.events.Registered.returnValues;
-          console.log("Registered event detected:", event);
-          toast.dismiss(toastId);
-          toast.success("Donor registered successfully !!");
-          toast.info("Please login to continue !!");
-          // alert(
-          //   `Registration completed! Role: ${event.role}, Timestamp: ${event.timestamp}`
-          // );
-        }
-      })
-      .on("error", (error: any) => {
-        console.log(error.message);
-      });
-  }
-
-  async function registerRecipientHandler() {
-    if (!web3 || !account) {
-      console.log("Wallet not connected");
-      return;
-    }
-
-    const contract = new web3.eth.Contract(contractABI, contractAddress);
-
-    contract.methods
-      .registerAsRecipient()
-      .send({ from: account })
-      .on("transactionHash", (hash: any) => {
-        console.log("Transaction sent, hash:", hash);
-      })
-      .on("receipt", (receipt: any) => {
-        console.log("Transaction confirmed:", receipt);
-
-        if (receipt.events && receipt.events.Registered) {
-          const event = receipt.events.Registered.returnValues;
-          console.log("Registered event detected:", event);
-          toast.dismiss(toastId);
-          toast.success("Recipient registered successfully !!");
-          toast.info("Please login to continue !!");
-          // alert(
-          //   `Registration completed! Role: ${event.role}, Timestamp: ${event.timestamp}`
-          // );
-        }
-      })
-      .on("error", (error: any) => {
-        console.log(error.message);
-      });
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -140,14 +67,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
     setIsLoading(true);
 
     try {
-      if (formData.role == "donor") {
-        toastId = toast.loading("Registering donor...");
-        await registerDonorHandler();
-      } else {
-        toastId = toast.loading("Registering recipient...");
-        await registerRecipientHandler();
-      }
-
       const response = await axios.post("http://localhost:3000/register", {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
@@ -156,8 +75,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onLoginClick }) => {
       });
 
       setIsLoading(false);
+      toast.success("Registration success !!");
       console.log("Registration successful:", response.data.message);
-      setTimeout(onLoginClick, 2000);
+      setTimeout(onLoginClick, 2000); 
     } catch (error: any) {
       setIsLoading(false);
       if (error.response && error.response.data && error.response.data.error) {

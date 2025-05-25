@@ -3,17 +3,13 @@ import DonorDashboard from "../components/DonorDashboard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import OrganTransplantLoader from "../components/Loading";
 
 function DonorPage() {
   const [donar, setDonar] = useState<any>(null);
   const [recipient, setRecipient] = useState(undefined);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
-  if (donar) {
-    const date = donar.organAvailabilityDate as Date;
-    console.log(date.toLocaleString());
-  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,8 +24,9 @@ function DonorPage() {
         });
         if (response.data.donor.status == "None") {
           toast.info("Please complete onboarding process");
-          navigate("/onboarding");
+          navigate("/donor-onboard");
         }
+        console.log(response.data.donor)
         setDonar(response.data.donor);
         setRecipient(response.data.matched_recipient);
       } catch (error) {
@@ -42,7 +39,7 @@ function DonorPage() {
     fetchData();
   }, []);
 
-  if (loading) return <>Loading...</>;
+  if (loading) return <OrganTransplantLoader/>;
 
   return (
     <div className="bg-gray-50 min-h-screen">
