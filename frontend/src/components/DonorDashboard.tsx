@@ -25,7 +25,10 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold text-white">Donor Dashboard</h1>
-            <span className="text-teal-100">Welcome, {donor.name}</span>
+            <div className="flex flex-row gap-6 items-center">
+              <span className="text-teal-100">Welcome, {donor.name}</span>
+              <button className="bg-white px-2 py-1 rounded-md text-sm transition-all duration-200 hover:scale-105">Log Out</button>
+            </div>
           </div>
         </div>
       </header>
@@ -132,7 +135,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
             )}
 
             {/* Notification card */}
-            <InfoCard title="Notifications" className="bg-gradient-to-b from-white to-cyan-50">
+            {/* <InfoCard title="Notifications" className="bg-gradient-to-b from-white to-cyan-50">
               <div className="divide-y divide-gray-100">
                 <div className="py-3">
                   <p className="text-sm font-medium text-gray-800">System Update</p>
@@ -143,7 +146,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
                   <p className="text-xs text-gray-500">Your donor status is now {donor.status}</p>
                 </div>
               </div>
-            </InfoCard>
+            </InfoCard> */}
           </div>
         </div>
       </main>

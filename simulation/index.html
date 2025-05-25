@@ -703,12 +703,19 @@
 				matrix.forEach((row, rowIndex) => {
 					tableHTML += `<tr><th class="px-4 py-2">${rowHeaders[rowIndex]}</th>`;
 					row.forEach((cell, colIndex) => {
-						// Check if the current cell is part of an optimal match
 						const isMatched = highlightMatches.some(
 							([r, c]) => r === rowIndex && c === colIndex
 						);
+						let bgClass = "";
+						if (isMatched) {
+							bgClass = "bg-green-100";
+						} else if (cell === 0) {
+							bgClass = "bg-red-100";
+						} else {
+							bgClass = "bg-yellow-50";
+						}
 						const highlightClass = isMatched ? "match-highlight" : "";
-						tableHTML += `<td class="px-4 py-2 ${highlightClass}">${cell}</td>`;
+						tableHTML += `<td class="px-4 py-2 ${bgClass} ${highlightClass}">${cell}</td>`;
 					});
 					tableHTML += "</tr>";
 				});
@@ -1089,23 +1096,32 @@
 
 			// --- Pre-fed Data ---
 			donors = [
-				new DonorNode("D001", "O+", "Delhi", 30, "Kidney"),
-				new DonorNode("D002", "A-", "Mumbai", 45, "Liver"),
-				new DonorNode("D003", "B+", "Delhi", 28, "Kidney"),
-				new DonorNode("D004", "AB+", "Chennai", 55, "Heart"),
-				new DonorNode("D005", "O-", "Bangalore", 33, "Kidney"),
-				new DonorNode("D006", "A+", "Mumbai", 40, "Liver"),
-				new DonorNode("D007", "B-", "Delhi", 60, "Kidney"),
+				// new DonorNode("D001", "O+", "Delhi", 30, "Kidney"),
+				// new DonorNode("D002", "A-", "Mumbai", 45, "Liver"),
+				// new DonorNode("D003", "B+", "Delhi", 28, "Kidney"),
+				// new DonorNode("D004", "AB+", "Chennai", 55, "Heart"),
+				// new DonorNode("D005", "O-", "Bangalore", 33, "Kidney"),
+				// new DonorNode("D006", "A+", "Mumbai", 40, "Liver"),
+				// new DonorNode("D007", "B-", "Delhi", 60, "Kidney"),
+				// new DonorNode("D008", "A+", "Delhi", 35, "Kidney"),
+				// new DonorNode("D009", "O+", "Mumbai", 29, "Liver"),
+				// new DonorNode("D010", "AB-", "Delhi", 50, "Kidney"),
+				// new DonorNode("D011", "A-", "Bangalore", 41, "Kidney"),
+				// new DonorNode("D012", "B+", "Chennai", 38, "Heart"),
+				new DonorNode("D1", "A+", "Bengaluru", 38, "Kidney"),
+				new DonorNode("D2", "A+", "Chennai", 30, "Heart"),
+				new DonorNode("D3", "B+", "Chennai", 42, "Kidney"),
+				new DonorNode("D4", "B+", "Chennai", 42, "Kidney"),
+				new DonorNode("D5", "A+", "Chennai", 42, "Liver"),
 			];
 
 			recipients = [
-				new RecipientNode("R001", "A+", "Delhi", 32, 5, "Kidney"),
-				new RecipientNode("R002", "O-", "Mumbai", 48, 4, "Liver"),
-				new RecipientNode("R003", "AB+", "Delhi", 29, 3, "Kidney"),
-				new RecipientNode("R004", "B+", "Chennai", 50, 5, "Heart"),
-				new RecipientNode("R005", "A-", "Bangalore", 35, 2, "Kidney"),
-				new RecipientNode("R006", "O+", "Mumbai", 42, 4, "Liver"),
-				new RecipientNode("R007", "AB-", "Delhi", 65, 1, "Kidney"),
+				new RecipientNode("R1", "A+", "Bengaluru", 40, 2, "Kidney"),
+				new RecipientNode("R2", "A+", "Bengaluru", 14, 5, "Kidney"),
+				new RecipientNode("R3", "A+", "Delhi", 28, 5, "Heart"),
+				new RecipientNode("R4", "AB+", "Delhi", 14, 5, "Heart"),
+				new RecipientNode("R5", "AB+", "Chennai", 14, 1, "Liver"),
+				new RecipientNode("R6", "AB+", "Delhi", 14, 5, "Liver"),
 			];
 
 			// Initial display calls when the page loads

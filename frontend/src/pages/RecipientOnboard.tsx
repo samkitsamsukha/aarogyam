@@ -35,13 +35,13 @@ interface RecipientFormData {
   phone: string;
   bloodType: "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-" | "O+" | "O-" | "";
   requiredOrgan:
-    | "Kidney"
-    | "Liver"
-    | "Heart"
-    | "Lung"
-    | "Pancreas"
-    | "Intestine"
-    | "";
+  | "Kidney"
+  | "Liver"
+  | "Heart"
+  | "Lung"
+  | "Pancreas"
+  | "Intestine"
+  | "";
   medicalCondition: MedicalCondition;
   geoLocation: GeoLocation;
   proof: string; // URL
@@ -104,7 +104,7 @@ const FormInput: React.FC<FormInputProps> = ({
   <div className="mb-4">
     <label
       htmlFor={id}
-      className="block text-teal-700 dark:text-teal-300 font-semibold mb-2"
+      className="block text-teal-800 font-semibold mb-2"
     >
       {label} {required && <span className="text-red-500">*</span>}
     </label>
@@ -117,7 +117,7 @@ const FormInput: React.FC<FormInputProps> = ({
         required={required}
         placeholder={placeholder}
         rows={3}
-        className="w-full px-3 py-2 border border-teal-300 dark:border-teal-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        className="w-full px-3 py-2 border border-teal-300  rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 bg-white text-gray-900"
       />
     ) : (
       <input
@@ -129,7 +129,7 @@ const FormInput: React.FC<FormInputProps> = ({
         required={required}
         pattern={pattern}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-teal-300 dark:border-teal-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        className="w-full px-3 py-2 border border-teal-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 bg-white text-gray-900"
       />
     )}
   </div>
@@ -157,7 +157,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   <div className="mb-4">
     <label
       htmlFor={id}
-      className="block text-teal-700 dark:text-teal-300 font-semibold mb-2"
+      className="block text-teal-800 font-semibold mb-2"
     >
       {label} {required && <span className="text-red-500">*</span>}
     </label>
@@ -167,7 +167,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
       value={value}
       onChange={onChange}
       required={required}
-      className="w-full px-3 py-2 border border-teal-300 dark:border-teal-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+      className="w-full px-3 py-2 border border-teal-300  rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-aqua-500  bg-white  text-gray-900"
     >
       <option value="" disabled>
         Select {label.toLowerCase()}
@@ -203,11 +203,11 @@ const FormCheckbox: React.FC<FormCheckboxProps> = ({
       name={name}
       checked={checked}
       onChange={onChange}
-      className="h-5 w-5 text-aqua-600 dark:text-aqua-500 border-teal-300 dark:border-teal-600 rounded focus:ring-aqua-500 dark:focus:ring-aqua-400 bg-white dark:bg-gray-800"
+      className="h-5 w-5 text-aqua-600 border-teal-300  rounded focus:ring-aqua-500 bg-white "
     />
     <label
       htmlFor={id}
-      className="ml-2 text-teal-700 dark:text-teal-300 font-medium"
+      className="ml-2 text-teal-700 font-medium"
     >
       {label}
     </label>
@@ -383,15 +383,15 @@ const RecipientOnboard: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-500 to-aqua-500 dark:from-teal-800 dark:via-cyan-800 dark:to-aqua-700 p-4 sm:p-8 flex items-center justify-center font-sans">
-      <div className="bg-white dark:bg-gray-900 p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
-        <h1 className="text-3xl sm:text-4xl font-bold text-center text-teal-700 dark:text-teal-200 mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-teal-500 via-cyan-500 to-aqua-500 p-4 sm:p-8 flex items-center justify-center font-sans">
+      <div className="bg-white p-6 sm:p-10 rounded-xl shadow-2xl w-full max-w-2xl">
+        <h1 className="text-3xl sm:text-4xl font-bold text-center text-teal-700 mb-8">
           Recipient Onboarding
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Personal Information Section */}
-          <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+          <fieldset className="border border-teal-300 p-4 rounded-lg">
+            <legend className="text-xl font-semibold text-teal-600 px-2">
               Personal Information
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -452,8 +452,8 @@ const RecipientOnboard: React.FC = () => {
           </fieldset>
 
           {/* Medical Condition Section */}
-          <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+          <fieldset className="border border-teal-300 p-4 rounded-lg">
+            <legend className="text-xl font-semibold text-teal-600 px-2">
               Medical Condition
             </legend>
             <div className="mt-4 space-y-4">
@@ -466,7 +466,6 @@ const RecipientOnboard: React.FC = () => {
                 isTextArea
                 placeholder="Brief medical diagnosis"
               />
-
               <FormInput
                 label="Chronic Diseases (comma-separated)"
                 id="chronicDiseases"
@@ -475,11 +474,8 @@ const RecipientOnboard: React.FC = () => {
                 onChange={(e) => setChronicDiseasesInput(e.target.value)}
                 placeholder="e.g., Diabetes, Hypertension"
               />
-
               <div>
-                <h3 className="text-md font-semibold text-teal-700 dark:text-teal-300 mb-2">
-                  Infections:
-                </h3>
+                <h3 className="text-md font-semibold text-teal-700 mb-2">Infections:</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <FormCheckbox
                     label="HIV"
@@ -504,7 +500,6 @@ const RecipientOnboard: React.FC = () => {
                   />
                 </div>
               </div>
-
               <FormInput
                 label="Allergies (comma-separated)"
                 id="allergies"
@@ -520,7 +515,6 @@ const RecipientOnboard: React.FC = () => {
                 checked={formData.medicalCondition.previousTransplants}
                 onChange={handleChange}
               />
-
               <FormInput
                 label="Recent Medications (comma-separated)"
                 id="recentMedications"
@@ -549,8 +543,8 @@ const RecipientOnboard: React.FC = () => {
           </fieldset>
 
           {/* GeoLocation Section */}
-          <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+          <fieldset className="border border-teal-300 p-4 rounded-lg">
+            <legend className="text-xl font-semibold text-teal-600 px-2">
               GeoLocation
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -576,8 +570,8 @@ const RecipientOnboard: React.FC = () => {
           </fieldset>
 
           {/* Proof Section */}
-          <fieldset className="border border-teal-300 dark:border-teal-600 p-4 rounded-lg">
-            <legend className="text-xl font-semibold text-teal-600 dark:text-teal-300 px-2">
+          <fieldset className="border border-teal-300 p-4 rounded-lg">
+            <legend className="text-xl font-semibold text-teal-600 px-2">
               Proof of Condition
             </legend>
             <FormInput
@@ -593,13 +587,14 @@ const RecipientOnboard: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-aqua-500 to-teal-600 hover:from-aqua-600 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-500"
+            className="w-full bg-teal-600 hover:from-aqua-600 hover:to-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-400"
           >
             Submit Recipient Data
           </button>
         </form>
       </div>
     </div>
+
   );
 };
 

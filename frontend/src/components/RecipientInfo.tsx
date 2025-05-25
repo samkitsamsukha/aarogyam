@@ -9,9 +9,18 @@ interface RecipientInfoProps {
 }
 
 const RecipientInfo: React.FC<RecipientInfoProps> = ({ recipient, status }) => {
+
+  const InfoRow = ({ label, value, highlight = "" }) => (
+    <div className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-md hover:bg-gray-100 transition">
+      <span className="text-gray-500">{label}:</span>
+      <span className={`text-sm sm:text-base ${highlight}`}>{value}</span>
+    </div>
+  );
+
+
   return (
-    <InfoCard 
-      title={status === "Matched" ? "Matched Recipient (Awaiting Confirmation)" : "Transplant Recipient"} 
+    <InfoCard
+      title={status === "Matched" ? "Matched Recipient (Awaiting Confirmation)" : "Transplant Recipient"}
       className="h-fit border-l-4 border-teal-500"
     >
       <div className="flex flex-col gap-4">
@@ -20,50 +29,24 @@ const RecipientInfo: React.FC<RecipientInfoProps> = ({ recipient, status }) => {
           <StatusBadge status={recipient.status} />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-500">Gender:</span>
-              <span className="font-medium">{recipient.gender}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Age:</span>
-              <span className="font-medium">{recipient.age} years</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Blood Type:</span>
-              <span className="font-bold text-red-600">{recipient.bloodType}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Required Organ:</span>
-              <span className="font-medium">{recipient.requiredOrgan}</span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-gray-500">Waiting Since:</span>
-              <span className="font-medium">
-                {recipient.waitingSince.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Diagnosis:</span>
-              <span className="font-medium">{recipient.medicalCondition.diagnosis}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500">Previous Transplants:</span>
-              <span className="font-medium">
-                {recipient.medicalCondition.previousTransplants ? "Yes" : "No"}
-              </span>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InfoRow label="Gender" value={recipient.gender} />
+          <InfoRow label="Age" value={`${recipient.age} years`} />
+          <InfoRow label="Blood Type" value={recipient.bloodType} highlight="text-red-600 font-bold" />
+          <InfoRow label="Required Organ" value={recipient.requiredOrgan} />
+          <InfoRow label="Waiting Since" value={recipient.waitingSince.toLocaleString()} />
+          <InfoRow label="Diagnosis" value={recipient.medicalCondition.diagnosis} highlight="text-indigo-600 font-semibold" />
+          <InfoRow
+            label="Previous Transplants"
+            value={recipient.medicalCondition.previousTransplants ? "Yes" : "No"}
+            highlight={recipient.medicalCondition.previousTransplants ? "text-yellow-600 font-medium" : ""}
+          />
         </div>
 
         {status === "Matched" && (
           <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md">
             <p className="text-amber-800 text-sm">
-              <span className="font-medium">Note:</span> This match is awaiting final confirmation 
+              <span className="font-medium">Note:</span> This match is awaiting final confirmation
               from the recipient. You will be notified once they confirm.
             </p>
           </div>
@@ -72,7 +55,7 @@ const RecipientInfo: React.FC<RecipientInfoProps> = ({ recipient, status }) => {
         {status === "Transplanted" && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
             <p className="text-green-800 text-sm">
-              <span className="font-medium">Congratulations!</span> The transplant procedure has been 
+              <span className="font-medium">Congratulations!</span> The transplant procedure has been
               successfully completed. Thank you for your life-saving donation.
             </p>
           </div>
