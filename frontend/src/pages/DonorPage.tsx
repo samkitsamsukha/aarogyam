@@ -3,7 +3,7 @@ import DonorDashboard from "../components/DonorDashboard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import OrganTransplantLoader from "../components/Loading";
+import { LoadingSpinner } from "../components/ui/LoadingSpinner";
 
 function DonorPage() {
   const [donar, setDonar] = useState<any>(null);
@@ -39,7 +39,7 @@ function DonorPage() {
     fetchData();
   }, []);
 
-  if (loading) return <OrganTransplantLoader/>;
+  if (loading) return <LoadingSpinner/>;
 
   return (
     <div className="bg-gray-50 min-h-screen">

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import RecipientCard from './RecipientCard';
 import { Filter, Search } from 'lucide-react';
 import axios from 'axios'
-import OrganTransplantLoader from './Loading';
 import { LoadingSpinner } from './ui/LoadingSpinner';
 
 const RecipientsList: React.FC = () => {

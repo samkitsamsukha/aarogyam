@@ -16,8 +16,8 @@ const StatusBanner: React.FC<StatusBannerProps> = ({ status }) => {
   switch (status) {
     case 'Pending':
       icon = <Clock className="h-5 w-5 text-amber-500" />;
-      title = 'Pending Approval';
-      message = 'Your application is currently being reviewed. We will notify you of any updates.';
+      title = 'Searching for Donor';
+      message = 'We are currently looking for a suitable donor match for you. You will be notified once a match is found.';
       bgColor = 'bg-amber-50';
       borderColor = 'border-amber-200';
       textColor = 'text-amber-800';

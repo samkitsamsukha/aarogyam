@@ -3,7 +3,7 @@ import { Donor, Recipient } from "../types";
 import DonorInfo from "./DonorInfo";
 import MedicalHistory from "./MedicalHistory";
 import RecipientInfo from "./RecipientInfo";
-import { Activity, UserRound, MapPin, FileText } from "lucide-react";
+import { Activity, UserRound, FileText } from "lucide-react";
 import Logout from "./Logout";
 
 interface DonorDashboardProps {
@@ -119,7 +119,7 @@ const DonorDashboard: React.FC<DonorDashboardProps> = ({ donor, recipient }) => 
                 <h3 className="mt-4 font-bold text-lg text-gray-800">{donor.status}</h3>
                 
                 <p className="text-center text-gray-600 mt-2">
-                  {donor.status === "Pending" && "Your donation application is under review."}
+                    {donor.status === "Pending" && "We are looking for a suitable recipient to match your donation."}
                   {donor.status === "Matched" && "You have been matched with a recipient."}
                   {donor.status === "Transplanted" && "Donation process completed successfully."}
                   {donor.status === "None" && "No active donation process."}
